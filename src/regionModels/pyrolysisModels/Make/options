@@ -18,7 +18,7 @@ EXE_INC = \
 LIB_LIBS = \
     -lregionModels \
     -lsolidChemistryModel \
-    -lsolidThermo \
+    -lbasicSolidThermo \
     -lfiniteVolume \
     -lmeshTools \
     -lcompressibleLESModels

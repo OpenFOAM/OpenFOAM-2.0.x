@@ -17,7 +17,7 @@ EXE_INC = \
 
 LIB_LIBS = \
     -lregionModels \
-    -lSLGThermoNew \
+    -lSLGThermo \
     -lfiniteVolume \
     -lmeshTools \
     -ldistributionModels \
