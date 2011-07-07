@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2004-2011 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2011-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,20 +22,53 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::rotatingTotalPressureFvPatchScalarField
+    Foam::fanPressureFvPatchScalarField
 
 Description
-    Foam::rotatingTotalPressureFvPatchScalarField
+    Assigns pressure inlet or outlet total pressure condition for a fan.
+
+    User specifies:
+    - pressure drop vs volumetric flow rate table (fan curve) file name;
+    - direction of normal flow through the fan, in or out;
+    - total pressure of the environment.
+
+    Example of the boundary condition specification:
+    \verbatim
+        inlet
+        {
+            type            fanPressure;
+            fileName        "fanCurve"; // Fan curve file name
+            outOfBounds     clamp;      // (error|warn|clamp|repeat)
+            direction       in;         // Direction of flow through fan
+            p0              uniform 0;  // Environmental total pressure
+            value           uniform 0;  // Initial pressure
+        }
+
+        outlet
+        {
+            type            fanPressure;
+            fileName        "fanCurve"; // Fan curve file name
+            outOfBounds     clamp;      // (error|warn|clamp|repeat)
+            direction       out;        // Direction of flow through fan
+            p0              uniform 0;  // Environmental total pressure
+            value           uniform 0;  // Initial pressure
+        }
+    \endverbatim
+
+See Also
+    Foam::totalPressureFvPatchScalarField and
+    Foam::interpolationTable
 
 SourceFiles
-    rotatingTotalPressureFvPatchScalarField.C
+    fanPressureFvPatchScalarField.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef rotatingTotalPressureFvPatchScalarField_H
-#define rotatingTotalPressureFvPatchScalarField_H
+#ifndef fanPressureFvPatchScalarField_H
+#define fanPressureFvPatchScalarField_H
 
 #include "totalPressureFvPatchScalarField.H"
+#include "interpolationTable.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -43,56 +76,74 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class rotatingTotalPressureFvPatch Declaration
+              Class fanPressureFvPatchScalarField Declaration
 \*---------------------------------------------------------------------------*/
 
-class rotatingTotalPressureFvPatchScalarField
+class fanPressureFvPatchScalarField
 :
     public totalPressureFvPatchScalarField
 {
+
+public:
+
+        //- Fan flow direction
+        enum fanFlowDirection
+        {
+            ffdIn,
+            ffdOut
+        };
+
+        static const NamedEnum<fanFlowDirection, 2> fanFlowDirectionNames_;
+
+private:
+
     // Private data
 
-        //- Angular velocity of the frame
-        vector omega_;
+        //- Tabulated fan curve
+        interpolationTable<scalar> fanCurve_;
+
+        //- Direction of flow through the fan relative to patch
+        fanFlowDirection direction_;
 
 
 public:
 
     //- Runtime type information
-    TypeName("rotatingTotalPressure");
+    TypeName("fanPressure");
 
 
     // Constructors
 
         //- Construct from patch and internal field
-        rotatingTotalPressureFvPatchScalarField
+        fanPressureFvPatchScalarField
         (
             const fvPatch&,
             const DimensionedField<scalar, volMesh>&
         );
 
         //- Construct from patch, internal field and dictionary
-        rotatingTotalPressureFvPatchScalarField
+        fanPressureFvPatchScalarField
         (
             const fvPatch&,
             const DimensionedField<scalar, volMesh>&,
             const dictionary&
         );
 
-        //- Construct by mapping given rotatingTotalPressureFvPatchScalarField
+        //- Construct by mapping given
+        //  fanPressureFvPatchScalarField
         //  onto a new patch
-        rotatingTotalPressureFvPatchScalarField
+        fanPressureFvPatchScalarField
         (
-            const rotatingTotalPressureFvPatchScalarField&,
+            const fanPressureFvPatchScalarField&,
             const fvPatch&,
             const DimensionedField<scalar, volMesh>&,
             const fvPatchFieldMapper&
         );
 
         //- Construct as copy
-        rotatingTotalPressureFvPatchScalarField
+        fanPressureFvPatchScalarField
         (
-            const rotatingTotalPressureFvPatchScalarField&
+            const fanPressureFvPatchScalarField&
         );
 
         //- Construct and return a clone
@@ -100,14 +151,14 @@ public:
         {
             return tmp<fvPatchScalarField>
             (
-                new rotatingTotalPressureFvPatchScalarField(*this)
+                new fanPressureFvPatchScalarField(*this)
             );
         }
 
         //- Construct as copy setting internal field reference
-        rotatingTotalPressureFvPatchScalarField
+        fanPressureFvPatchScalarField
         (
-            const rotatingTotalPressureFvPatchScalarField&,
+            const fanPressureFvPatchScalarField&,
             const DimensionedField<scalar, volMesh>&
         );
 
@@ -119,33 +170,19 @@ public:
         {
             return tmp<fvPatchScalarField>
             (
-                new rotatingTotalPressureFvPatchScalarField(*this, iF)
+                new fanPressureFvPatchScalarField
+                (
+                    *this,
+                    iF
+                )
             );
         }
 
 
     // Member functions
 
-        // Access
-
-            //- Return the angular velocity of rotation
-            const vector& omega() const
-            {
-                return omega_;
-            }
-
-            //- Return the angular velocity of rotation
-            vector& omega()
-            {
-                return omega_;
-            }
-
-
-        // Evaluation functions
-
-            //- Update the coefficients associated with the patch field
-            virtual void updateCoeffs();
-
+        //- Update the coefficients associated with the patch field
+        virtual void updateCoeffs();
 
         //- Write
         virtual void write(Ostream&) const;
