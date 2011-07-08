@@ -233,7 +233,7 @@ tmp<volScalarField> SpalartAllmaras::DnuTildaEff() const
 {
     return tmp<volScalarField>
     (
-        new volScalarField("DnuTildaEff", nuTilda_/sigmaNut_ + nu())
+        new volScalarField("DnuTildaEff", (nuTilda_ + nu())/sigmaNut_)
     );
 }
 
