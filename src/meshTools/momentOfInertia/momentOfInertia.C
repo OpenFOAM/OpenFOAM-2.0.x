@@ -24,6 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "momentOfInertia.H"
+#include "polyMeshTetDecomposition.H"
 
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
 

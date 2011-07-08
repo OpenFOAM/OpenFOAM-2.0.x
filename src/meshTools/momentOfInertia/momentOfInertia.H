@@ -41,7 +41,6 @@ SourceFiles
 #include "triFaceList.H"
 #include "triSurface.H"
 #include "polyMesh.H"
-#include "polyMeshTetDecomposition.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
