@@ -61,10 +61,10 @@ runApplication `getApplication`
 #runParallel `getApplication` 4
 #
 ## Reconstruct
-for i in bottomAir topAir heater leftSolid rightSolid
-do
-   reconstructPar -region $i > log.reconstructPar.$i 2>&1
-done
+#for i in bottomAir topAir heater leftSolid rightSolid
+#do
+#   reconstructPar -region $i > log.reconstructPar.$i 2>&1
+#done
 
 
 echo
