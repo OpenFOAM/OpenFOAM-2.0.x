@@ -334,6 +334,7 @@ bool Foam::pairPatchAgglomeration::agglomeratePatch
             patch.points()
         )
     );
+
     return true;
 }
 
@@ -343,6 +344,7 @@ void Foam::pairPatchAgglomeration:: agglomerate()
     label nPairLevels = 0;
     label nCreatedLevels = 1; //0 level is the base patch
 
+
     while (nCreatedLevels < maxLevels_)
     {
         label nCoarseCells = -1;
@@ -351,7 +353,7 @@ void Foam::pairPatchAgglomeration:: agglomerate()
         tmp<labelField> finalAgglomPtr(new labelField(patch.size()));
 
         bool agglomOK = false;
-        while (!agglomOK)
+        while (!agglomOK && patch.size())
         {
             finalAgglomPtr = agglomerateOneLevel
             (
@@ -365,6 +367,7 @@ void Foam::pairPatchAgglomeration:: agglomerate()
                 finalAgglomPtr,
                 nCreatedLevels
             );
+
         }
 
         nFaces_[nCreatedLevels] = nCoarseCells;
