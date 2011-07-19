@@ -61,7 +61,7 @@ void Foam::sutherlandTransport<Thermo>::write(Ostream& os) const
     dictionary dict("transport");
     dict.add("As", As_);
     dict.add("Ts", Ts_);
-    os  << dict;
+    os  << indent << dict.dictName() << dict;
 
     os  << decrIndent << token::END_BLOCK << nl;
 }
