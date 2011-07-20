@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2004-2011 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2011-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,15 +23,28 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "quadraticUpwind.H"
+#ifndef porousBafflePressureFvPatchFieldsFwd_H
+#define porousBafflePressureFvPatchFieldsFwd_H
+
+#include "fieldTypes.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-    //makeSurfaceInterpolationScheme(quadraticUpwind);
-    makeSurfaceInterpolationTypeScheme(quadraticUpwind, scalar);
-    makeSurfaceInterpolationTypeScheme(quadraticUpwind, vector);
-}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+template<class Type> class porousBafflePressureFvPatchField;
+
+makePatchTypeFieldTypedefs(porousBafflePressure);
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#endif
 
 // ************************************************************************* //

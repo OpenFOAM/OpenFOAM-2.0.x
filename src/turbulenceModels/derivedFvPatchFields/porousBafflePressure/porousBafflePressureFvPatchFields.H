@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2004-2011 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2011-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -21,63 +21,23 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Description
-    Map volume internal field on topology change.  This is a partial
-    template specialisation, see MapGeometricFields.
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef MapFvVolField_H
-#define MapFvVolField_H
+#ifndef porousBafflePressureFvPatchFields_H
+#define porousBafflePressureFvPatchFields_H
 
-#include "Field.H"
-#include "volMesh.H"
+#include "porousBafflePressureFvPatchField.H"
+#include "fieldTypes.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
 
-template<class Type, class MeshMapper>
-class MapInternalField<Type, MeshMapper, volMesh>
-{
-public:
-
-    MapInternalField()
-    {}
-
-    void operator()
-    (
-        Field<Type>& field,
-        const MeshMapper& mapper
-    ) const;
-};
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 
-template<class Type, class MeshMapper>
-void MapInternalField<Type, MeshMapper, volMesh>::operator()
-(
-    Field<Type>& field,
-    const MeshMapper& mapper
-) const
-{
-    if (field.size() != mapper.volMap().sizeBeforeMapping())
-    {
-        FatalErrorIn
-        (
-            "void MapInternalField<Type, MeshMapper, volMesh>::operator()\n"
-            "(\n"
-            "    Field<Type>& field,\n"
-            "    const MeshMapper& mapper\n"
-            ") const"
-        )  << "Incompatible size before mapping.  Field size: " << field.size()
-           << " map size: " << mapper.volMap().sizeBeforeMapping()
-           << abort(FatalError);
-    }
-
-    field.autoMap(mapper.volMap());
-}
-
+makePatchTypeFieldTypedefs(porousBafflePressure);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
