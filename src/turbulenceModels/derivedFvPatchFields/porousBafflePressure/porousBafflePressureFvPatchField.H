@@ -45,7 +45,7 @@ SourceFiles
 #ifndef porousBafflePressureFvPatchField_H
 #define porousBafflePressureFvPatchField_H
 
-#include "fieldJumpBase.H"
+#include "fixedJumpFvPatchField.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -59,7 +59,7 @@ namespace Foam
 template<class Type>
 class porousBafflePressureFvPatchField
 :
-    public fieldJumpBase<Type>
+    public fixedJumpFvPatchField<Type>
 {
     // Private data
 

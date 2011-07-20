@@ -24,7 +24,6 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "porousBafflePressureFvPatchField.H"
-#include "IOmanip.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -35,7 +34,7 @@ Foam::porousBafflePressureFvPatchField<Type>::porousBafflePressureFvPatchField
     const DimensionedField<Type, volMesh>& iF
 )
 :
-    fieldJumpBase<Type>(p, iF),
+    fixedJumpFvPatchField<Type>(p, iF),
     D_(0),
     I_(0),
     length_(0)
@@ -51,7 +50,7 @@ Foam::porousBafflePressureFvPatchField<Type>::porousBafflePressureFvPatchField
     const fvPatchFieldMapper& mapper
 )
 :
-    fieldJumpBase<Type>(ptf, p, iF, mapper),
+    fixedJumpFvPatchField<Type>(ptf, p, iF, mapper),
     D_(ptf.D_),
     I_(ptf.I_),
     length_(ptf.length_)
@@ -66,7 +65,7 @@ Foam::porousBafflePressureFvPatchField<Type>::porousBafflePressureFvPatchField
     const dictionary& dict
 )
 :
-    fieldJumpBase<Type>(p, iF),
+    fixedJumpFvPatchField<Type>(p, iF),
     D_(readScalar(dict.lookup("D"))),
     I_(readScalar(dict.lookup("I"))),
     length_(readScalar(dict.lookup("length")))
@@ -92,7 +91,7 @@ Foam::porousBafflePressureFvPatchField<Type>::porousBafflePressureFvPatchField
 )
 :
     cyclicLduInterfaceField(),
-    fieldJumpBase<Type>(ptf),
+    fixedJumpFvPatchField<Type>(ptf),
     D_(ptf.D_),
     I_(ptf.I_),
     length_(ptf.length_)
@@ -106,7 +105,7 @@ Foam::porousBafflePressureFvPatchField<Type>::porousBafflePressureFvPatchField
     const DimensionedField<Type, volMesh>& iF
 )
 :
-    fieldJumpBase<Type>(ptf, iF),
+    fixedJumpFvPatchField<Type>(ptf, iF),
     D_(ptf.D_),
     I_(ptf.I_),
     length_(ptf.length_)
@@ -120,7 +119,7 @@ template<class Type>
 void Foam::porousBafflePressureFvPatchField<Type>::write(Ostream& os) const
 {
 
-    fieldJumpBase<Type>::write(os);
+    fixedJumpFvPatchField<Type>::write(os);
 
     os.writeKeyword("D") << D_ << token::END_STATEMENT << nl;
     os.writeKeyword("I") << I_ << token::END_STATEMENT << nl;

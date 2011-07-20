@@ -35,7 +35,7 @@ Foam::fanFvPatchField<Type>::fanFvPatchField
     const DimensionedField<Type, volMesh>& iF
 )
 :
-    fieldJumpBase<Type>(p, iF),
+    fixedJumpFvPatchField<Type>(p, iF),
     f_(0)
 {}
 
@@ -49,7 +49,7 @@ Foam::fanFvPatchField<Type>::fanFvPatchField
     const fvPatchFieldMapper& mapper
 )
 :
-    fieldJumpBase<Type>(ptf, p, iF, mapper),
+    fixedJumpFvPatchField<Type>(ptf, p, iF, mapper),
     f_(ptf.f_)
 {}
 
@@ -62,7 +62,7 @@ Foam::fanFvPatchField<Type>::fanFvPatchField
     const dictionary& dict
 )
 :
-    fieldJumpBase<Type>(p, iF),
+    fixedJumpFvPatchField<Type>(p, iF),
     f_()
 {
     {
@@ -94,7 +94,7 @@ Foam::fanFvPatchField<Type>::fanFvPatchField
 )
 :
     cyclicLduInterfaceField(),
-    fieldJumpBase<Type>(ptf),
+    fixedJumpFvPatchField<Type>(ptf),
     f_(ptf.f_)
 {}
 
@@ -106,7 +106,7 @@ Foam::fanFvPatchField<Type>::fanFvPatchField
     const DimensionedField<Type, volMesh>& iF
 )
 :
-    fieldJumpBase<Type>(ptf, iF),
+    fixedJumpFvPatchField<Type>(ptf, iF),
     f_(ptf.f_)
 {}
 
@@ -118,7 +118,7 @@ template<class Type>
 void Foam::fanFvPatchField<Type>::write(Ostream& os) const
 {
 
-    fieldJumpBase<Type>::write(os);
+    fixedJumpFvPatchField<Type>::write(os);
 
     IOstream::streamFormat fmt0 = os.format(IOstream::ASCII);
     os.writeKeyword("f") << f_ << token::END_STATEMENT << nl;

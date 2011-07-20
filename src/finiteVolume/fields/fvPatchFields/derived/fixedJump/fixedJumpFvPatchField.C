@@ -23,27 +23,26 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "fieldJumpBase.H"
-#include "IOmanip.H"
+#include "fixedJumpFvPatchField.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class Type>
-Foam::fieldJumpBase<Type>::fieldJumpBase
+Foam::fixedJumpFvPatchField<Type>::fixedJumpFvPatchField
 (
     const fvPatch& p,
     const DimensionedField<Type, volMesh>& iF
 )
 :
     jumpCyclicFvPatchField<Type>(p, iF),
-    jump_(this->size(), 0.0)
+    jump_(this->size(), pTraits<Type>::zero)
 {}
 
 
 template<class Type>
-Foam::fieldJumpBase<Type>::fieldJumpBase
+Foam::fixedJumpFvPatchField<Type>::fixedJumpFvPatchField
 (
-    const fieldJumpBase<Type>& ptf,
+    const fixedJumpFvPatchField<Type>& ptf,
     const fvPatch& p,
     const DimensionedField<Type, volMesh>& iF,
     const fvPatchFieldMapper& mapper
@@ -55,7 +54,7 @@ Foam::fieldJumpBase<Type>::fieldJumpBase
 
 
 template<class Type>
-Foam::fieldJumpBase<Type>::fieldJumpBase
+Foam::fixedJumpFvPatchField<Type>::fixedJumpFvPatchField
 (
     const fvPatch& p,
     const DimensionedField<Type, volMesh>& iF,
@@ -63,14 +62,14 @@ Foam::fieldJumpBase<Type>::fieldJumpBase
 )
 :
     jumpCyclicFvPatchField<Type>(p, iF),
-    jump_(this->size(), 0.0)
+    jump_("jump", dict, p.size())
 {}
 
 
 template<class Type>
-Foam::fieldJumpBase<Type>::fieldJumpBase
+Foam::fixedJumpFvPatchField<Type>::fixedJumpFvPatchField
 (
-    const fieldJumpBase<Type>& ptf
+    const fixedJumpFvPatchField<Type>& ptf
 )
 :
     cyclicLduInterfaceField(),
@@ -80,9 +79,9 @@ Foam::fieldJumpBase<Type>::fieldJumpBase
 
 
 template<class Type>
-Foam::fieldJumpBase<Type>::fieldJumpBase
+Foam::fixedJumpFvPatchField<Type>::fixedJumpFvPatchField
 (
-    const fieldJumpBase<Type>& ptf,
+    const fixedJumpFvPatchField<Type>& ptf,
     const DimensionedField<Type, volMesh>& iF
 )
 :
@@ -94,7 +93,7 @@ Foam::fieldJumpBase<Type>::fieldJumpBase
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class Type>
-void Foam::fieldJumpBase<Type>::autoMap
+void Foam::fixedJumpFvPatchField<Type>::autoMap
 (
     const fvPatchFieldMapper& m
 )
@@ -105,7 +104,7 @@ void Foam::fieldJumpBase<Type>::autoMap
 
 
 template<class Type>
-void Foam::fieldJumpBase<Type>::rmap
+void Foam::fixedJumpFvPatchField<Type>::rmap
 (
     const fvPatchField<Type>& ptf,
     const labelList& addr
@@ -113,17 +112,18 @@ void Foam::fieldJumpBase<Type>::rmap
 {
     jumpCyclicFvPatchField<Type>::rmap(ptf, addr);
 
-    const fieldJumpBase<Type>& tiptf =
-        refCast<const fieldJumpBase<Type> >(ptf);
+    const fixedJumpFvPatchField<Type>& tiptf =
+        refCast<const fixedJumpFvPatchField<Type> >(ptf);
     jump_.rmap(tiptf.jump_, addr);
 }
 
 
 template<class Type>
-void Foam::fieldJumpBase<Type>::write(Ostream& os) const
+void Foam::fixedJumpFvPatchField<Type>::write(Ostream& os) const
 {
     fvPatchField<Type>::write(os);
     os.writeKeyword("patchType") << "cyclic" << token::END_STATEMENT << nl;
+    jump_.writeEntry("jump", os);
 }
 
 

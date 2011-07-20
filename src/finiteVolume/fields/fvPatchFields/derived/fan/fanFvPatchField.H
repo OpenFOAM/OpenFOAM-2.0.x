@@ -35,7 +35,7 @@ SourceFiles
 #ifndef fanFvPatchField_H
 #define fanFvPatchField_H
 
-#include "fieldJumpBase.H"
+#include "fixedJumpFvPatchField.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -49,7 +49,7 @@ namespace Foam
 template<class Type>
 class fanFvPatchField
 :
-    public fieldJumpBase<Type>
+    public fixedJumpFvPatchField<Type>
 {
     // Private data
 
