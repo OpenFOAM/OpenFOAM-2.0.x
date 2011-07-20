@@ -23,107 +23,110 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "pressureJumpBasicFvPatchField.H"
+#include "porousBafflePressureFvPatchField.H"
 #include "IOmanip.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class Type>
-Foam::pressureJumpBasicFvPatchField<Type>::pressureJumpBasicFvPatchField
+Foam::porousBafflePressureFvPatchField<Type>::porousBafflePressureFvPatchField
 (
     const fvPatch& p,
     const DimensionedField<Type, volMesh>& iF
 )
 :
-    jumpCyclicFvPatchField<Type>(p, iF),
-    jump_(this->size(), 0.0)
+    fieldJumpBase<Type>(p, iF),
+    D_(0),
+    I_(0),
+    length_(0)
 {}
 
 
 template<class Type>
-Foam::pressureJumpBasicFvPatchField<Type>::pressureJumpBasicFvPatchField
+Foam::porousBafflePressureFvPatchField<Type>::porousBafflePressureFvPatchField
 (
-    const pressureJumpBasicFvPatchField<Type>& ptf,
+    const porousBafflePressureFvPatchField<Type>& ptf,
     const fvPatch& p,
     const DimensionedField<Type, volMesh>& iF,
     const fvPatchFieldMapper& mapper
 )
 :
-    jumpCyclicFvPatchField<Type>(ptf, p, iF, mapper),
-    jump_(ptf.jump_, mapper)
+    fieldJumpBase<Type>(ptf, p, iF, mapper),
+    D_(ptf.D_),
+    I_(ptf.I_),
+    length_(ptf.length_)
 {}
 
 
 template<class Type>
-Foam::pressureJumpBasicFvPatchField<Type>::pressureJumpBasicFvPatchField
+Foam::porousBafflePressureFvPatchField<Type>::porousBafflePressureFvPatchField
 (
     const fvPatch& p,
     const DimensionedField<Type, volMesh>& iF,
     const dictionary& dict
 )
 :
-    jumpCyclicFvPatchField<Type>(p, iF),
-    jump_(this->size(), 0.0)
-{}
+    fieldJumpBase<Type>(p, iF),
+    D_(readScalar(dict.lookup("D"))),
+    I_(readScalar(dict.lookup("I"))),
+    length_(readScalar(dict.lookup("length")))
+{
+    if (dict.found("value"))
+    {
+        fvPatchField<Type>::operator=
+        (
+            Field<Type>("value", dict, p.size())
+        );
+    }
+    else
+    {
+        this->evaluate(Pstream::blocking);
+    }
+}
 
 
 template<class Type>
-Foam::pressureJumpBasicFvPatchField<Type>::pressureJumpBasicFvPatchField
+Foam::porousBafflePressureFvPatchField<Type>::porousBafflePressureFvPatchField
 (
-    const pressureJumpBasicFvPatchField<Type>& ptf
+    const porousBafflePressureFvPatchField<Type>& ptf
 )
 :
     cyclicLduInterfaceField(),
-    jumpCyclicFvPatchField<Type>(ptf),
-    jump_(ptf.jump_)
+    fieldJumpBase<Type>(ptf),
+    D_(ptf.D_),
+    I_(ptf.I_),
+    length_(ptf.length_)
 {}
 
 
 template<class Type>
-Foam::pressureJumpBasicFvPatchField<Type>::pressureJumpBasicFvPatchField
+Foam::porousBafflePressureFvPatchField<Type>::porousBafflePressureFvPatchField
 (
-    const pressureJumpBasicFvPatchField<Type>& ptf,
+    const porousBafflePressureFvPatchField<Type>& ptf,
     const DimensionedField<Type, volMesh>& iF
 )
 :
-    jumpCyclicFvPatchField<Type>(ptf, iF),
-    jump_(ptf.jump_)
+    fieldJumpBase<Type>(ptf, iF),
+    D_(ptf.D_),
+    I_(ptf.I_),
+    length_(ptf.length_)
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-template<class Type>
-void Foam::pressureJumpBasicFvPatchField<Type>::autoMap
-(
-    const fvPatchFieldMapper& m
-)
-{
-    jumpCyclicFvPatchField<Type>::autoMap(m);
-    jump_.autoMap(m);
-}
-
 
 template<class Type>
-void Foam::pressureJumpBasicFvPatchField<Type>::rmap
-(
-    const fvPatchField<Type>& ptf,
-    const labelList& addr
-)
+void Foam::porousBafflePressureFvPatchField<Type>::write(Ostream& os) const
 {
-    jumpCyclicFvPatchField<Type>::rmap(ptf, addr);
 
-    const pressureJumpBasicFvPatchField<Type>& tiptf =
-        refCast<const pressureJumpBasicFvPatchField<Type> >(ptf);
-    jump_.rmap(tiptf.jump_, addr);
-}
+    fieldJumpBase<Type>::write(os);
 
+    os.writeKeyword("D") << D_ << token::END_STATEMENT << nl;
+    os.writeKeyword("I") << I_ << token::END_STATEMENT << nl;
+    os.writeKeyword("length") << length_ << token::END_STATEMENT << nl;
 
-template<class Type>
-void Foam::pressureJumpBasicFvPatchField<Type>::write(Ostream& os) const
-{
-    fvPatchField<Type>::write(os);
-    os.writeKeyword("patchType") << "cyclic" << token::END_STATEMENT << nl;
+    this->writeEntry("value", os);
 }
 
 

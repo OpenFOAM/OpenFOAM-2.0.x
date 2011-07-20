@@ -22,18 +22,18 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::pressureJumpBasicFvPatchField
+    Foam::fieldJumpBase
 
 Description
-    Foam::pressureJumpBasicFvPatchField
+    Base class for "jump" of a field<type>
 
 SourceFiles
-    pressureJumpBasicFvPatchField.C
+    fieldJumpBase.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef pressureJumpBasicFvPatchField_H
-#define pressureJumpBasicFvPatchField_H
+#ifndef fieldJumpBase_H
+#define fieldJumpBase_H
 
 #include "jumpCyclicFvPatchField.H"
 
@@ -43,11 +43,11 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                    Class pressureJumpBasicFvPatchField Declaration
+                    Class fieldJumpBase Declaration
 \*---------------------------------------------------------------------------*/
 
 template<class Type>
-class pressureJumpBasicFvPatchField
+class fieldJumpBase
 :
     public jumpCyclicFvPatchField<Type>
 {
@@ -66,34 +66,34 @@ public:
     // Constructors
 
         //- Construct from patch and internal field
-        pressureJumpBasicFvPatchField
+        fieldJumpBase
         (
             const fvPatch&,
             const DimensionedField<Type, volMesh>&
         );
 
         //- Construct from patch, internal field and dictionary
-        pressureJumpBasicFvPatchField
+        fieldJumpBase
         (
             const fvPatch&,
             const DimensionedField<Type, volMesh>&,
             const dictionary&
         );
 
-        //- Construct by mapping given pressureJumpBasicFvPatchField onto a
+        //- Construct by mapping given fieldJumpBase onto a
         //  new patch
-        pressureJumpBasicFvPatchField
+        fieldJumpBase
         (
-            const pressureJumpBasicFvPatchField<Type>&,
+            const fieldJumpBase<Type>&,
             const fvPatch&,
             const DimensionedField<Type, volMesh>&,
             const fvPatchFieldMapper&
         );
 
         //- Construct as copy
-        pressureJumpBasicFvPatchField
+        fieldJumpBase
         (
-            const pressureJumpBasicFvPatchField<Type>&
+            const fieldJumpBase<Type>&
         );
 
         //- Construct and return a clone
@@ -101,14 +101,14 @@ public:
         {
             return tmp<fvPatchField<Type> >
             (
-                new pressureJumpBasicFvPatchField<Type>(*this)
+                new fieldJumpBase<Type>(*this)
             );
         }
 
         //- Construct as copy setting internal field reference
-        pressureJumpBasicFvPatchField
+        fieldJumpBase
         (
-            const pressureJumpBasicFvPatchField<Type>&,
+            const fieldJumpBase<Type>&,
             const DimensionedField<Type, volMesh>&
         );
 
@@ -120,7 +120,7 @@ public:
         {
             return tmp<fvPatchField<Type> >
             (
-                new pressureJumpBasicFvPatchField<Type>(*this, iF)
+                new fieldJumpBase<Type>(*this, iF)
             );
         }
 
@@ -138,7 +138,7 @@ public:
                 }
                 else
                 {
-                    return refCast<const pressureJumpBasicFvPatchField<Type> >
+                    return refCast<const fieldJumpBase<Type> >
                     (
                         this->neighbourPatchField()
                     ).jump();
@@ -174,7 +174,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#   include "pressureJumpBasicFvPatchField.C"
+#   include "fieldJumpBase.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
