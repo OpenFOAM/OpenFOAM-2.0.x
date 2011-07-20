@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2004-2011 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2011-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,108 +23,107 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "fanFvPatchField.H"
+#include "fieldJumpBase.H"
 #include "IOmanip.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class Type>
-Foam::fanFvPatchField<Type>::fanFvPatchField
+Foam::fieldJumpBase<Type>::fieldJumpBase
 (
     const fvPatch& p,
     const DimensionedField<Type, volMesh>& iF
 )
 :
-    fieldJumpBase<Type>(p, iF),
-    f_(0)
+    jumpCyclicFvPatchField<Type>(p, iF),
+    jump_(this->size(), 0.0)
 {}
 
 
 template<class Type>
-Foam::fanFvPatchField<Type>::fanFvPatchField
+Foam::fieldJumpBase<Type>::fieldJumpBase
 (
-    const fanFvPatchField<Type>& ptf,
+    const fieldJumpBase<Type>& ptf,
     const fvPatch& p,
     const DimensionedField<Type, volMesh>& iF,
     const fvPatchFieldMapper& mapper
 )
 :
-    fieldJumpBase<Type>(ptf, p, iF, mapper),
-    f_(ptf.f_)
+    jumpCyclicFvPatchField<Type>(ptf, p, iF, mapper),
+    jump_(ptf.jump_, mapper)
 {}
 
 
 template<class Type>
-Foam::fanFvPatchField<Type>::fanFvPatchField
+Foam::fieldJumpBase<Type>::fieldJumpBase
 (
     const fvPatch& p,
     const DimensionedField<Type, volMesh>& iF,
     const dictionary& dict
 )
 :
-    fieldJumpBase<Type>(p, iF),
-    f_()
-{
-    {
-        Istream& is = dict.lookup("f");
-        is.format(IOstream::ASCII);
-        is >> f_;
-
-        // Check that f_ table is same on both sides.?
-    }
-
-    if (dict.found("value"))
-    {
-        fvPatchField<Type>::operator=
-        (
-            Field<Type>("value", dict, p.size())
-        );
-    }
-    else
-    {
-        this->evaluate(Pstream::blocking);
-    }
-}
-
-
-template<class Type>
-Foam::fanFvPatchField<Type>::fanFvPatchField
-(
-    const fanFvPatchField<Type>& ptf
-)
-:
-    cyclicLduInterfaceField(),
-    fieldJumpBase<Type>(ptf),
-    f_(ptf.f_)
+    jumpCyclicFvPatchField<Type>(p, iF),
+    jump_(this->size(), 0.0)
 {}
 
 
 template<class Type>
-Foam::fanFvPatchField<Type>::fanFvPatchField
+Foam::fieldJumpBase<Type>::fieldJumpBase
 (
-    const fanFvPatchField<Type>& ptf,
+    const fieldJumpBase<Type>& ptf
+)
+:
+    cyclicLduInterfaceField(),
+    jumpCyclicFvPatchField<Type>(ptf),
+    jump_(ptf.jump_)
+{}
+
+
+template<class Type>
+Foam::fieldJumpBase<Type>::fieldJumpBase
+(
+    const fieldJumpBase<Type>& ptf,
     const DimensionedField<Type, volMesh>& iF
 )
 :
-    fieldJumpBase<Type>(ptf, iF),
-    f_(ptf.f_)
+    jumpCyclicFvPatchField<Type>(ptf, iF),
+    jump_(ptf.jump_)
 {}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
+template<class Type>
+void Foam::fieldJumpBase<Type>::autoMap
+(
+    const fvPatchFieldMapper& m
+)
+{
+    jumpCyclicFvPatchField<Type>::autoMap(m);
+    jump_.autoMap(m);
+}
+
 
 template<class Type>
-void Foam::fanFvPatchField<Type>::write(Ostream& os) const
+void Foam::fieldJumpBase<Type>::rmap
+(
+    const fvPatchField<Type>& ptf,
+    const labelList& addr
+)
 {
+    jumpCyclicFvPatchField<Type>::rmap(ptf, addr);
 
-    fieldJumpBase<Type>::write(os);
+    const fieldJumpBase<Type>& tiptf =
+        refCast<const fieldJumpBase<Type> >(ptf);
+    jump_.rmap(tiptf.jump_, addr);
+}
 
-    IOstream::streamFormat fmt0 = os.format(IOstream::ASCII);
-    os.writeKeyword("f") << f_ << token::END_STATEMENT << nl;
-    os.format(fmt0);
 
-    this->writeEntry("value", os);
+template<class Type>
+void Foam::fieldJumpBase<Type>::write(Ostream& os) const
+{
+    fvPatchField<Type>::write(os);
+    os.writeKeyword("patchType") << "cyclic" << token::END_STATEMENT << nl;
 }
 
 

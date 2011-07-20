@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2004-2011 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2011-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,20 +22,20 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::fanFvPatchField
+    Foam::fieldJumpBase
 
 Description
-    Foam::fanFvPatchField
+    Base class for "jump" of a field<type>
 
 SourceFiles
-    fanFvPatchField.C
+    fieldJumpBase.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef fanFvPatchField_H
-#define fanFvPatchField_H
+#ifndef fieldJumpBase_H
+#define fieldJumpBase_H
 
-#include "fieldJumpBase.H"
+#include "jumpCyclicFvPatchField.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -43,56 +43,57 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                       Class fanFvPatchField Declaration
+                    Class fieldJumpBase Declaration
 \*---------------------------------------------------------------------------*/
 
 template<class Type>
-class fanFvPatchField
+class fieldJumpBase
 :
-    public fieldJumpBase<Type>
+    public jumpCyclicFvPatchField<Type>
 {
-    // Private data
 
-        //- Fan pressure rise polynomial coefficients
-        List<scalar> f_;
+protected:
+
+    // Protected data
+
+        //- "jump" field
+        Field<Type> jump_;
 
 
 public:
-
-    //- Runtime type information
-    TypeName("fan");
 
 
     // Constructors
 
         //- Construct from patch and internal field
-        fanFvPatchField
+        fieldJumpBase
         (
             const fvPatch&,
             const DimensionedField<Type, volMesh>&
         );
 
         //- Construct from patch, internal field and dictionary
-        fanFvPatchField
+        fieldJumpBase
         (
             const fvPatch&,
             const DimensionedField<Type, volMesh>&,
             const dictionary&
         );
 
-        //- Construct by mapping given fanFvPatchField onto a new patch
-        fanFvPatchField
+        //- Construct by mapping given fieldJumpBase onto a
+        //  new patch
+        fieldJumpBase
         (
-            const fanFvPatchField<Type>&,
+            const fieldJumpBase<Type>&,
             const fvPatch&,
             const DimensionedField<Type, volMesh>&,
             const fvPatchFieldMapper&
         );
 
         //- Construct as copy
-        fanFvPatchField
+        fieldJumpBase
         (
-            const fanFvPatchField<Type>&
+            const fieldJumpBase<Type>&
         );
 
         //- Construct and return a clone
@@ -100,14 +101,14 @@ public:
         {
             return tmp<fvPatchField<Type> >
             (
-                new fanFvPatchField<Type>(*this)
+                new fieldJumpBase<Type>(*this)
             );
         }
 
         //- Construct as copy setting internal field reference
-        fanFvPatchField
+        fieldJumpBase
         (
-            const fanFvPatchField<Type>&,
+            const fieldJumpBase<Type>&,
             const DimensionedField<Type, volMesh>&
         );
 
@@ -119,7 +120,7 @@ public:
         {
             return tmp<fvPatchField<Type> >
             (
-                new fanFvPatchField<Type>(*this, iF)
+                new fieldJumpBase<Type>(*this, iF)
             );
         }
 
@@ -128,27 +129,42 @@ public:
 
         // Access
 
-            //- Return the polynomial coefficients
-            const List<scalar>& f() const
+            //- Return the "jump" across the patch.
+            virtual tmp<Field<Type> > jump() const
             {
-                return f_;
+                if (this->cyclicPatch().owner())
+                {
+                    return jump_;
+                }
+                else
+                {
+                    return refCast<const fieldJumpBase<Type> >
+                    (
+                        this->neighbourPatchField()
+                    ).jump();
+                }
             }
 
 
-        // Evaluation functions
+        // Mapping functions
 
-            //- Update the coefficients associated with the patch field
-            virtual void updateCoeffs();
+            //- Map (and resize as needed) from self given a mapping object
+            virtual void autoMap
+            (
+                const fvPatchFieldMapper&
+            );
+
+            //- Reverse map the given fvPatchField onto this fvPatchField
+            virtual void rmap
+            (
+                const fvPatchField<Type>&,
+                const labelList&
+            );
 
 
         //- Write
         virtual void write(Ostream&) const;
 };
-
-
-//- Specialisation of the jump-condition for the pressure
-template<>
-void fanFvPatchField<scalar>::updateCoeffs();
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -158,7 +174,7 @@ void fanFvPatchField<scalar>::updateCoeffs();
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-#   include "fanFvPatchField.C"
+#   include "fieldJumpBase.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
