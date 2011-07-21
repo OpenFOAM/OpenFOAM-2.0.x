@@ -76,7 +76,7 @@ void Foam::porousBafflePressureFvPatchField<Foam::scalar>::updateCoeffs()
 
         const scalarField nuEffw = model.nuEff()().boundaryField()[patchI];
 
-        jump_ = -(I_*nuEffw*Un + D_*0.5*magSqr(Un)*length_);
+        jump_ = -(I_*nuEffw*mag(Un) + D_*0.5*magSqr(Un)*length_);
     }
     else
     {
@@ -93,7 +93,7 @@ void Foam::porousBafflePressureFvPatchField<Foam::scalar>::updateCoeffs()
 
         Un /= rhow;
 
-        jump_ = -(I_*muEffw*Un + D_*0.5*rhow*magSqr(Un)*length_);
+        jump_ = -(I_*muEffw*mag(Un) + D_*0.5*rhow*magSqr(Un)*length_);
     }
 
     if (debug)
