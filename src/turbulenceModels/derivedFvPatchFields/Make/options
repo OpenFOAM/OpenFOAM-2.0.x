@@ -11,5 +11,6 @@ LIB_LIBS = \
     -lfiniteVolume \
     -lbasicThermophysicalModels \
     -lspecie \
-    -lmeshTools
-
+    -lmeshTools \
+    -lcompressibleTurbulenceModel \
+    -lincompressibleTurbulenceModel

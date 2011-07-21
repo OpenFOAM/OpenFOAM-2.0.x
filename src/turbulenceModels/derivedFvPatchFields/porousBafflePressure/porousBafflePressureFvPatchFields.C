@@ -98,11 +98,13 @@ void Foam::porousBafflePressureFvPatchField<Foam::scalar>::updateCoeffs()
 
     if (debug)
     {
-        scalar avePressureDrop = gAverage(jump_);
+        scalar avePressureJump = gAverage(jump_);
+        scalar aveVelocity = gAverage(mag(Un));
 
         Info<< patch().boundaryMesh().mesh().name() << ':'
             << patch().name() << ':'
-            << " Average pressure drop :" << avePressureDrop
+            << " Average pressure drop :" << avePressureJump
+            << " Average velocity :" << aveVelocity
             << endl;
     }
 
