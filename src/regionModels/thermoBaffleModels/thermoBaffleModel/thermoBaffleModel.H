@@ -38,6 +38,7 @@ SourceFiles
 #include "scalarIOField.H"
 #include "autoPtr.H"
 #include "volFieldsFwd.H"
+#include "basicSolidThermo.H"
 #include "regionModel1D.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -67,6 +68,9 @@ private:
         //- Disallow default bitwise assignment
         void operator=(const thermoBaffleModel&);
 
+        //- Initialize thermal Baffle
+        void init();
+
 
 protected:
 
@@ -75,11 +79,14 @@ protected:
         //- Baffle physical thickness
         scalarField thickness_;
 
-        //- Baffle geometric thickness
+        //- Baffle mesh thickness
         dimensionedScalar delta_;
 
         //- Is it one dimension
         bool oneD_;
+
+        //- Is thickness constant
+        bool constantThickness_;
 
 
     // Protected Member Functions
@@ -108,6 +115,21 @@ public:
              (modelType, mesh)
          );
 
+
+         declareRunTimeSelectionTable
+         (
+             autoPtr,
+             thermoBaffleModel,
+             dictionary,
+             (
+                const word& modelType,
+                const fvMesh& mesh,
+                const dictionary& dict
+             ),
+             (modelType, mesh, dict)
+         );
+
+
     // Constructors
 
         //- Construct null from mesh
@@ -116,11 +138,26 @@ public:
         //- Construct from type name and mesh
         thermoBaffleModel(const word& modelType, const fvMesh& mesh);
 
+        //- Construct from type name and mesh and dict
+        thermoBaffleModel
+        (
+            const word& modelType,
+            const fvMesh& mesh,
+            const dictionary& dict
+        );
+
 
     // Selectors
 
         //- Return a reference to the selected model
          static autoPtr<thermoBaffleModel> New(const fvMesh& mesh);
+
+        //- Return a reference to the selected model using dictionary
+        static autoPtr<thermoBaffleModel> New
+        (
+            const fvMesh& mesh,
+            const dictionary& dict
+        );
 
 
     //- Destructor
@@ -131,6 +168,8 @@ public:
 
         // Access
 
+             //- Return solid thermo
+            virtual const basicSolidThermo& thermo() const = 0;
 
             //- Return thickness
             const scalarField& thickness() const
@@ -148,6 +187,12 @@ public:
             bool oneD() const
             {
                 return oneD_;
+            }
+
+            //- Return if region has constant thickness
+            bool constantThickness() const
+            {
+                return constantThickness_;
             }
 
 

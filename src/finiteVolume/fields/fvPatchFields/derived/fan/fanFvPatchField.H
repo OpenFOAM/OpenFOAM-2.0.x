@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2004-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2004-2011 OpenCFD Ltd.
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -35,7 +35,7 @@ SourceFiles
 #ifndef fanFvPatchField_H
 #define fanFvPatchField_H
 
-#include "jumpCyclicFvPatchField.H"
+#include "fixedJumpFvPatchField.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -49,15 +49,12 @@ namespace Foam
 template<class Type>
 class fanFvPatchField
 :
-    public jumpCyclicFvPatchField<Type>
+    public fixedJumpFvPatchField<Type>
 {
     // Private data
 
         //- Fan pressure rise polynomial coefficients
         List<scalar> f_;
-
-        //- "jump" field
-        Field<Type> jump_;
 
 
 public:
@@ -137,37 +134,6 @@ public:
                 return f_;
             }
 
-            //- Return the "jump" across the patch.
-            virtual tmp<Field<Type> > jump() const
-            {
-                if (this->cyclicPatch().owner())
-                {
-                    return jump_;
-                }
-                else
-                {
-                    return refCast<const fanFvPatchField<Type> >
-                    (
-                        this->neighbourPatchField()
-                    ).jump();
-                }
-            }
-
-
-        // Mapping functions
-
-            //- Map (and resize as needed) from self given a mapping object
-            virtual void autoMap
-            (
-                const fvPatchFieldMapper&
-            );
-
-            //- Reverse map the given fvPatchField onto this fvPatchField
-            virtual void rmap
-            (
-                const fvPatchField<Type>&,
-                const labelList&
-            );
 
         // Evaluation functions
 
