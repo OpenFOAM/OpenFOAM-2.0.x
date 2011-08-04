@@ -86,7 +86,7 @@ Foam::fanPressureFvPatchScalarField::fanPressureFvPatchScalarField
     const dictionary& dict
 )
 :
-    totalPressureFvPatchScalarField(p, iF),
+    totalPressureFvPatchScalarField(p, iF, dict),
     fanCurve_(dict),
     direction_(fanFlowDirectionNames_.read(dict.lookup("direction")))
 {
