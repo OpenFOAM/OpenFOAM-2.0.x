@@ -909,7 +909,7 @@ DimensionedConstants
         }
         electromagnetic
         {
-            e               e [ 0 0 -1 0 0 1 0 ] 1.60218e-19;
+            e               e [ 0 0 1 0 0 1 0 ] 1.60218e-19;
         }
         atomic
         {
@@ -939,7 +939,7 @@ DimensionedConstants
         }
         electromagnetic
         {
-            e               e [ 0 0 -1 0 0 1 0 ] 1.60218e-19;
+            e               e [ 0 0 1 0 0 1 0 ] 1.60218e-19;
         }
         atomic
         {
