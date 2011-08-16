@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2011 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -89,10 +89,7 @@ Foam::fanPressureFvPatchScalarField::fanPressureFvPatchScalarField
     totalPressureFvPatchScalarField(p, iF, dict),
     fanCurve_(dict),
     direction_(fanFlowDirectionNames_.read(dict.lookup("direction")))
-{
-    // Assign initial pressure by "value"
-    fvPatchField<scalar>::operator==(scalarField("value", dict, p.size()));
-}
+{}
 
 
 Foam::fanPressureFvPatchScalarField::fanPressureFvPatchScalarField

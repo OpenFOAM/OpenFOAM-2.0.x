@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2010-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -118,7 +118,7 @@ void fixedShearStressFvPatchVectorField::updateCoeffs()
 
     const scalarField& ry = patch().deltaCoeffs();
 
-    tmp<scalarField> nuEffw = rasModel.nuEff()().boundaryField()[patchI];
+    const scalarField nuEffw = rasModel.nuEff()().boundaryField()[patchI];
 
     tmp<vectorField> UwUpdated =
         tauHat*(tauHat & (tau0_*(1.0/(ry*nuEffw)) + Ui));
@@ -127,7 +127,7 @@ void fixedShearStressFvPatchVectorField::updateCoeffs()
 
     if (debug)
     {
-        tmp<vectorField> nHat = this->patch().nf();
+        const vectorField nHat = this->patch().nf();
         volSymmTensorField Reff(rasModel.devReff());
         Info << "tau : " << (nHat & Reff.boundaryField()[patchI])() << endl;
     }
