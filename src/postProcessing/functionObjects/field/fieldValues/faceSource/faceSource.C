@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2011 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -284,23 +284,7 @@ void Foam::fieldValues::faceSource::initialise(const dictionary& dict)
     if (operation_ == opWeightedAverage)
     {
         dict.lookup("weightField") >> weightFieldName_;
-        if
-        (
-            obr().foundObject<volScalarField>(weightFieldName_)
-         || obr().foundObject<surfaceScalarField>(weightFieldName_)
-        )
-        {
-            Info<< "    weight field = " << weightFieldName_;
-        }
-        else
-        {
-            FatalErrorIn("faceSource::initialise()")
-                << type() << " " << name_ << ": "
-                << sourceTypeNames_[source_] << "(" << sourceName_ << "):"
-                << nl << "    Weight field " << weightFieldName_
-                << " must be either a " << volScalarField::typeName << " or "
-                << surfaceScalarField::typeName << nl << exit(FatalError);
-        }
+        Info<< "    weight field = " << weightFieldName_;
     }
 
     Info<< nl << endl;

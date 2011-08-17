@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2009-2010 OpenCFD Ltd.
+    \\  /    A nd           | Copyright (C) 2011 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -200,7 +200,11 @@ protected:
 
         //- Return field values by looking up field name
         template<class Type>
-        tmp<Field<Type> > getFieldValues(const word& fieldName) const;
+        tmp<Field<Type> > getFieldValues
+        (
+            const word& fieldName,
+            const bool mustGet = false
+        ) const;
 
         //- Apply the 'operation' to the values
         template<class Type>
