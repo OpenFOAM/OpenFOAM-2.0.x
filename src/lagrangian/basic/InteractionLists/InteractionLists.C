@@ -167,7 +167,7 @@ void Foam::InteractionLists<ParticleType>::buildInteractionLists()
         procBbRndExt,
         8,              // maxLevel,
         10,             // leafSize,
-        100.0
+        100.0           // duplicity
     );
 
     ril_.setSize(cellBbsToExchange.size());
@@ -386,7 +386,7 @@ void Foam::InteractionLists<ParticleType>::buildInteractionLists()
         procBbRndExt,
         8,              // maxLevel,
         10,             // leafSize,
-        100.0
+        100.0           // duplicity
     );
 
     rwfil_.setSize(wallFaceBbsToExchange.size());
@@ -584,10 +584,7 @@ void Foam::InteractionLists<ParticleType>::buildInteractionLists()
         );
 
         // Find all cells intersecting extendedBb
-        labelList interactingElems
-        (
-            allCellsTree.findBox(extendedBb)
-        );
+        labelList interactingElems(allCellsTree.findBox(extendedBb));
 
         // Reserve space to avoid multiple resizing
         DynamicList<label> cellDIL(interactingElems.size());
@@ -660,10 +657,7 @@ void Foam::InteractionLists<ParticleType>::findExtendedProcBbsInRange
 
             if (procBb.overlaps(extendedReferredProcBb))
             {
-                tmpExtendedProcBbsInRange.append
-                (
-                    extendedReferredProcBb
-                );
+                tmpExtendedProcBbsInRange.append(extendedReferredProcBb);
 
                 // Dummy index, there are no transforms, so there will
                 // be no resultant transform when this is decoded.
@@ -903,7 +897,6 @@ void Foam::InteractionLists<ParticleType>::buildMap
     (
         new mapDistribute
         (
-
             constructSize,
             sendMap.xfer(),
             constructMap.xfer()
@@ -920,7 +913,6 @@ void Foam::InteractionLists<ParticleType>::prepareParticlesToRefer
 {
     const globalIndexAndTransform& globalTransforms =
         mesh_.globalData().globalTransforms();
-
 
     referredParticles_.setSize(cellIndexAndTransformToDistribute_.size());
 
