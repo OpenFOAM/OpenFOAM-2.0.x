@@ -169,7 +169,7 @@ Foam::autoPtr<Foam::pointPatchField<Type> > Foam::pointPatchField<Type>::New
             typename dictionaryConstructorTable::iterator patchTypeCstrIter
                 = dictionaryConstructorTablePtr_->find(p.type());
 
-            if (patchTypeCstrIter == pointPatchConstructorTablePtr_->end())
+            if (patchTypeCstrIter == dictionaryConstructorTablePtr_->end())
             {
                 FatalIOErrorIn
                 (
