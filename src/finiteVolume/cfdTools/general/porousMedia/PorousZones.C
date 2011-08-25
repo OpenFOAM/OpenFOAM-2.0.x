@@ -145,7 +145,7 @@ void Foam::PorousZones<ZoneType>::addResistance
 {
     forAll(*this, i)
     {
-        this->operator[](i).addResistance(UEqn);
+        this->operator[](i).addResistance(UEqn, rho, mu);
     }
 }
 
