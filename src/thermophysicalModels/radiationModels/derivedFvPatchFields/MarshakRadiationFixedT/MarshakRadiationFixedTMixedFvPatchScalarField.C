@@ -164,6 +164,11 @@ void Foam::MarshakRadiationFixedTMixedFvPatchScalarField::updateCoeffs()
         return;
     }
 
+    // Since we're inside initEvaluate/evaluate there might be processor
+    // comms underway. Change the tag we use.
+    int oldTag = UPstream::msgType();
+    UPstream::msgType() = oldTag+1;
+
     // Re-calc reference value
     refValue() = 4.0*constant::physicoChemical::sigma.value()*pow4(Trad_);
 
@@ -171,10 +176,15 @@ void Foam::MarshakRadiationFixedTMixedFvPatchScalarField::updateCoeffs()
     const scalarField& gamma =
         patch().lookupPatchField<volScalarField, scalar>("gammaRad");
 
-    const scalarField Ep(emissivity()/(2.0*(scalar(2.0) - emissivity())));
+    const scalarField temissivity = emissivity();
+
+    const scalarField Ep(temissivity/(2.0*(scalar(2.0) - temissivity)));
 
     // Set value fraction
     valueFraction() = 1.0/(1.0 + gamma*patch().deltaCoeffs()/Ep);
+
+    // Restore tag
+    UPstream::msgType() = oldTag;
 
     mixedFvPatchScalarField::updateCoeffs();
 }
