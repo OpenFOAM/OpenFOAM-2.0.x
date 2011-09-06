@@ -149,8 +149,6 @@ public:
         );
 
 
-
-
     //- Destructor
     virtual ~regionModel1D();
 
