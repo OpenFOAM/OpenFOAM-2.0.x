@@ -265,10 +265,16 @@ void Foam::externalWallHeatFluxTemperatureFvPatchScalarField::write
 {
     mixedFvPatchScalarField::write(os);
     temperatureCoupledBase::write(os);
-    q_.writeEntry("q", os);
-    h_.writeEntry("h", os);
-    Ta_.writeEntry("Ta", os);
-    this->writeEntry("value", os);
+    if (oldMode_ == fixedHeatFlux)
+    {
+        q_.writeEntry("q", os);
+    }
+    else if(oldMode_ == fixedHeatTransferCoeff)
+    {
+        h_.writeEntry("h", os);
+        Ta_.writeEntry("Ta", os);
+        this->writeEntry("value", os);
+    }
 }
 
 
