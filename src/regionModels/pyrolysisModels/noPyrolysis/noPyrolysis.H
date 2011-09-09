@@ -76,11 +76,14 @@ protected:
         //- Read control parameters from dictionary
         virtual bool read(const dictionary& dict);
 
+        //- Reset solidChemistryModel and basicSolidThermo pointers
+        void constructThermoChemistry();
+
         //- Reference to the solid chemistry model
         autoPtr<solidChemistryModel> solidChemistry_;
 
         //- Reference to solid thermo
-        basicSolidThermo& solidThermo_;
+        autoPtr<basicSolidThermo> solidThermo_;
 
 
 public:
