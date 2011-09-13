@@ -118,14 +118,17 @@ Foam::codedFunctionObject::codedFunctionObject
 (
     const word& name,
     const Time& time,
-    const dictionary& dict
+    const dictionary& dict,
+    bool readNow
 )
 :
     functionObject(name),
     codedBaseClass(dict),
     time_(time)
 {
-    read(dict_);
+    if(readNow) {
+        read(dict_);
+    }
 }
 
 

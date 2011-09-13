@@ -115,7 +115,8 @@ public:
         (
             const word& name,
             const Time& time,
-            const dictionary& dict
+            const dictionary& dict,
+            bool readNow=true   // allow child-classes to avoid compilation
         );
 
 
