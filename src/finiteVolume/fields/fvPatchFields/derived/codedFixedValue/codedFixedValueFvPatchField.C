@@ -54,140 +54,11 @@ const Foam::word Foam::codedFixedValueFvPatchField<Type>::codeTemplateH
 // * * * * * * * * * * * * * Static Member Functions * * * * * * * * * * * * //
 
 template<class Type>
-void* Foam::codedFixedValueFvPatchField<Type>::loadLibrary
-(
-    const fileName& libPath,
-    const string& globalFuncName,
-    const dictionary& contextDict
-) const
+Foam::dlLibraryTable &Foam::codedFixedValueFvPatchField<Type>::libs
+() const
 {
-    void* lib = 0;
-
-    // avoid compilation by loading an existing library
-    if (!libPath.empty())
-    {
-        dlLibraryTable& libs = const_cast<Time&>(this->db().time()).libs();
-
-        if (libs.open(libPath, false))
-        {
-            lib = libs.findLibrary(libPath);
-
-            // verify the loaded version and unload if needed
-            if (lib)
-            {
-                // provision for manual execution of code after loading
-                if (dlSymFound(lib, globalFuncName))
-                {
-                    loaderFunctionType function =
-                        reinterpret_cast<loaderFunctionType>
-                        (
-                            dlSym(lib, globalFuncName)
-                        );
-
-                    if (function)
-                    {
-                        (*function)(true);    // force load
-                    }
-                    else
-                    {
-                        FatalIOErrorIn
-                        (
-                            "codedFixedValueFvPatchField<Type>::"
-                            "updateLibrary()",
-                            contextDict
-                        )   << "Failed looking up symbol " << globalFuncName
-                            << nl << "from " << libPath << exit(FatalIOError);
-                    }
-                }
-                else
-                {
-                    FatalIOErrorIn
-                    (
-                        "codedFixedValueFvPatchField<Type>::loadLibrary()",
-                        contextDict
-                    )   << "Failed looking up symbol " << globalFuncName << nl
-                        << "from " << libPath << exit(FatalIOError);
-
-                    lib = 0;
-                    if (!libs.close(libPath, false))
-                    {
-                        FatalIOErrorIn
-                        (
-                            "codedFixedValueFvPatchField<Type>::loadLibrary()",
-                            contextDict
-                        )   << "Failed unloading library "
-                            << libPath
-                            << exit(FatalIOError);
-                    }
-                }
-            }
-        }
-    }
-
-    return lib;
+    return const_cast<Time&>(this->db().time()).libs();
 }
-
-
-template<class Type>
-void Foam::codedFixedValueFvPatchField<Type>::unloadLibrary
-(
-    const fileName& libPath,
-    const string& globalFuncName,
-    const dictionary& contextDict
-) const
-{
-    void* lib = 0;
-
-    if (libPath.empty())
-    {
-        return;
-    }
-
-    dlLibraryTable& libs = const_cast<Time&>(this->db().time()).libs();
-
-    lib = libs.findLibrary(libPath);
-
-    if (!lib)
-    {
-        return;
-    }
-
-    // provision for manual execution of code before unloading
-    if (dlSymFound(lib, globalFuncName))
-    {
-        loaderFunctionType function =
-            reinterpret_cast<loaderFunctionType>
-            (
-                dlSym(lib, globalFuncName)
-            );
-
-        if (function)
-        {
-            (*function)(false);    // force unload
-        }
-        else
-        {
-            FatalIOErrorIn
-            (
-                "codedFixedValueFvPatchField<Type>::unloadLibrary()",
-                contextDict
-            )   << "Failed looking up symbol " << globalFuncName << nl
-                << "from " << libPath << exit(FatalIOError);
-        }
-    }
-
-    if (!libs.close(libPath, false))
-    {
-        FatalIOErrorIn
-        (
-            "codedFixedValueFvPatchField<Type>::"
-            "updateLibrary()",
-            contextDict
-        )   << "Failed unloading library " << libPath
-            << exit(FatalIOError);
-    }
-}
-
 
 template<class Type>
 void Foam::codedFixedValueFvPatchField<Type>::setFieldTemplates
@@ -238,146 +109,70 @@ const Foam::IOdictionary& Foam::codedFixedValueFvPatchField<Type>::dict() const
 
 
 template<class Type>
-void Foam::codedFixedValueFvPatchField<Type>::createLibrary
+void Foam::codedFixedValueFvPatchField<Type>::prepare
 (
     dynamicCode& dynCode,
     const dynamicCodeContext& context
 ) const
 {
-    bool create = Pstream::master();
+    // take no chances - typeName must be identical to redirectType_
+    dynCode.setFilterVariable("typeName", redirectType_);
+    
+    // set TemplateType and FieldType filter variables
+    // (for fvPatchField)
+    setFieldTemplates(dynCode);
+    
+    // compile filtered C template
+    dynCode.addCompileFile(codeTemplateC);
+    
+    // copy filtered H template
+    dynCode.addCopyFile(codeTemplateH);
+    
 
-    if (create)
-    {
-        // Write files for new library
-        if (!dynCode.upToDate(context))
-        {
-            // filter with this context
-            dynCode.reset(context);
-
-            // take no chances - typeName must be identical to redirectType_
-            dynCode.setFilterVariable("typeName", redirectType_);
-
-            // set TemplateType and FieldType filter variables
-            // (for fvPatchField)
-            setFieldTemplates(dynCode);
-
-            // compile filtered C template
-            dynCode.addCompileFile(codeTemplateC);
-
-            // copy filtered H template
-            dynCode.addCopyFile(codeTemplateH);
-
-
-            // debugging: make BC verbose
-            //  dynCode.setFilterVariable("verbose", "true");
-            //  Info<<"compile " << redirectType_ << " sha1: "
-            //      << context.sha1() << endl;
-
-            // define Make/options
-            dynCode.setMakeOptions
-            (
-                "EXE_INC = -g \\\n"
-                "-I$(LIB_SRC)/finiteVolume/lnInclude \\\n"
-              + context.options()
-              + "\n\nLIB_LIBS = \\\n"
-              + "    -lOpenFOAM \\\n"
-              + "    -lfiniteVolume \\\n"
-              + context.libs()
-            );
-
-            if (!dynCode.copyOrCreateFiles(true))
-            {
-                FatalIOErrorIn
-                (
-                    "codedFixedValueFvPatchField<Type>::createLibrary(..)",
-                    context.dict()
-                )   << "Failed writing files for" << nl
-                    << dynCode.libRelPath() << nl
-                    << exit(FatalIOError);
-            }
-        }
-
-        if (!dynCode.wmakeLibso())
-        {
-            FatalIOErrorIn
-            (
-                "codedFixedValueFvPatchField<Type>::createLibrary(..)",
-                context.dict()
-            )   << "Failed wmake " << dynCode.libRelPath() << nl
-                << exit(FatalIOError);
-        }
-    }
-
-
-    // all processes must wait for compile to finish
-    reduce(create, orOp<bool>());
+    // debugging: make BC verbose
+    //  dynCode.setFilterVariable("verbose", "true");
+    //  Info<<"compile " << redirectType_ << " sha1: "
+    //      << context.sha1() << endl;
+    
+    // define Make/options
+    dynCode.setMakeOptions
+        (
+            "EXE_INC = -g \\\n"
+            "-I$(LIB_SRC)/finiteVolume/lnInclude \\\n"
+            + context.options()
+            + "\n\nLIB_LIBS = \\\n"
+            + "    -lOpenFOAM \\\n"
+            + "    -lfiniteVolume \\\n"
+            + context.libs()
+        );
 }
-
 
 template<class Type>
-void Foam::codedFixedValueFvPatchField<Type>::updateLibrary() const
+const Foam::dictionary &Foam::codedFixedValueFvPatchField<Type>::codeDict() const
 {
-    dynamicCode::checkSecurity
-    (
-        "codedFixedValueFvPatchField<Type>::updateLibrary()",
-        dict_
-    );
 
     // use system/codeDict or in-line
-    const dictionary& codeDict =
-    (
-        dict_.found("code")
-      ? dict_
-      : this->dict().subDict(redirectType_)
-    );
-
-    dynamicCodeContext context(codeDict);
-
-    // codeName: redirectType + _<sha1>
-    // codeDir : redirectType
-    dynamicCode dynCode
-    (
-        redirectType_ + context.sha1().str(true),
-        redirectType_
-    );
-    const fileName libPath = dynCode.libPath();
-
-
-    // the correct library was already loaded => we are done
-    if (const_cast<Time&>(this->db().time()).libs().findLibrary(libPath))
-    {
-        return;
-    }
-
-    Info<< "Using dynamicCode for patch " << this->patch().name()
-        << " on field " << this->dimensionedInternalField().name() << nl
-        << "at line " << codeDict.startLineNumber()
-        << " in " << codeDict.name() << endl;
-
-
-    // remove instantiation of fvPatchField provided by library
-    redirectPatchFieldPtr_.clear();
-
-    // may need to unload old library
-    unloadLibrary
-    (
-        oldLibPath_,
-        dynamicCode::libraryBaseName(oldLibPath_),
-        context.dict()
-    );
-
-    // try loading an existing library (avoid compilation when possible)
-    if (!loadLibrary(libPath, dynCode.codeName(), context.dict()))
-    {
-        createLibrary(dynCode, context);
-
-        loadLibrary(libPath, dynCode.codeName(), context.dict());
-    }
-
-    // retain for future reference
-    oldLibPath_ = libPath;
+    return
+        (
+            dict_.found("code")
+            ? dict_
+            : this->dict().subDict(redirectType_)
+        );
 }
 
+template<class Type>
+Foam::string Foam::codedFixedValueFvPatchField<Type>::description() const
+{
+    return "Using dynamicCode for patch " + this->patch().name()
+        + " on field " + this->dimensionedInternalField().name();
+}
+
+template<class Type>
+void Foam::codedFixedValueFvPatchField<Type>::clearRedirectPtr() const
+{
+    // remove instantiation of fvPatchField provided by library
+    redirectPatchFieldPtr_.clear();
+}
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -389,7 +184,7 @@ Foam::codedFixedValueFvPatchField<Type>::codedFixedValueFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(p, iF),
-    oldLibPath_(),
+    codedBaseClass(),
     redirectPatchFieldPtr_()
 {}
 
@@ -404,9 +199,7 @@ Foam::codedFixedValueFvPatchField<Type>::codedFixedValueFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(ptf, p, iF, mapper),
-    dict_(ptf.dict_),
-    redirectType_(ptf.redirectType_),
-    oldLibPath_(ptf.oldLibPath_),
+    codedBaseClass(ptf.dict_),
     redirectPatchFieldPtr_()
 {}
 
@@ -420,9 +213,7 @@ Foam::codedFixedValueFvPatchField<Type>::codedFixedValueFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(p, iF, dict),
-    dict_(dict),
-    redirectType_(dict.lookup("redirectType")),
-    oldLibPath_(),
+    codedBaseClass(dict),
     redirectPatchFieldPtr_()
 {
     updateLibrary();
@@ -436,9 +227,7 @@ Foam::codedFixedValueFvPatchField<Type>::codedFixedValueFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(ptf),
-    dict_(ptf.dict_),
-    redirectType_(ptf.redirectType_),
-    oldLibPath_(ptf.oldLibPath_),
+    codedBaseClass(ptf.dict_),
     redirectPatchFieldPtr_()
 {}
 
@@ -451,9 +240,7 @@ Foam::codedFixedValueFvPatchField<Type>::codedFixedValueFvPatchField
 )
 :
     fixedValueFvPatchField<Type>(ptf, iF),
-    dict_(ptf.dict_),
-    redirectType_(ptf.redirectType_),
-    oldLibPath_(ptf.oldLibPath_),
+    codedBaseClass(ptf.dict_),
     redirectPatchFieldPtr_()
 {}
 

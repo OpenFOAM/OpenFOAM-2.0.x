@@ -79,6 +79,7 @@ SourceFiles
 #define codedFixedValueFvPatchField_H
 
 #include "fixedValueFvPatchFields.H"
+#include "codedBaseClass.H"
 
 #include <dlfcn.h>
 #include <link.h>
@@ -100,60 +101,34 @@ class IOdictionary;
 template<class Type>
 class codedFixedValueFvPatchField
 :
-    public fixedValueFvPatchField<Type>
+    public fixedValueFvPatchField<Type>,
+    public codedBaseClass
 {
     // Private data
 
-        //- Dictionary contents for the boundary condition
-        mutable dictionary dict_;
-
-        const word redirectType_;
-
-        //- Previously loaded library
-        mutable fileName oldLibPath_;
-
         mutable autoPtr<fvPatchField<Type> > redirectPatchFieldPtr_;
-
 
     // Private Member Functions
 
         const IOdictionary& dict() const;
 
-        //- Global loader/unloader function type
-        typedef void (*loaderFunctionType)(bool);
-
-        static int collectLibsCallback
-        (
-            struct dl_phdr_info *info,
-            size_t size,
-            void *data
-        );
-
-        //- Load specified library and execute globalFuncName(true)
-        void* loadLibrary
-        (
-            const fileName& libPath,
-            const string& globalFuncName,
-            const dictionary& contextDict
-        ) const;
-
-        //- Execute globalFuncName(false) and unload specified library
-        void unloadLibrary
-        (
-            const fileName& libPath,
-            const string& globalFuncName,
-            const dictionary& contextDict
-        ) const;
-
         //- Set the rewrite vars controlling the Type
         static void setFieldTemplates(dynamicCode& dynCode);
 
-        //- Create library based on the dynamicCodeContext
-        void createLibrary(dynamicCode&, const dynamicCodeContext&) const;
+        //- get the loaded dynamic libraries
+        dlLibraryTable& libs() const;
 
-        //- Update library as required
-        void updateLibrary() const;
+        //- adapt the context for the current object
+        void prepare(dynamicCode &,const dynamicCodeContext&) const;
+      
+        // Return a description (type + name) for the output
+        string description() const;
 
+        // Clear the ptr to the redirected object
+        void clearRedirectPtr() const;
+
+        // Get the dictionary to initialize the codeContext
+        const dictionary &codeDict() const;
 
 public:
 
