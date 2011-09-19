@@ -226,7 +226,6 @@ void Foam::KinematicCloud<CloudType>::postEvolve()
     this->dispersion().cacheFields(false);
 
     forces_.cacheFields(false);
-
     functions_.postEvolve();
 
     solution_.nextIter();
