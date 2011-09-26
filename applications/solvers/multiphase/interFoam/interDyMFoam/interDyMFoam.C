@@ -67,8 +67,19 @@ int main(int argc, char *argv[])
         #include "alphaCourantNo.H"
         #include "CourantNo.H"
 
+        tmp<surfaceScalarField> meshPhi0;
+
         // Make the fluxes absolute
-        fvc::makeAbsolute(phi, U);
+        if (mesh.moving())
+        {
+            // Cache the mesh-motion fluxes
+            meshPhi0 = tmp<surfaceScalarField>
+            (
+                new surfaceScalarField(fvc::meshPhi(U))
+            );
+
+            phi += meshPhi0();
+        }
 
         #include "setDeltaT.H"
 
@@ -97,7 +108,10 @@ int main(int argc, char *argv[])
         }
 
         // Make the fluxes relative to the mesh motion
-        fvc::makeRelative(phi, U);
+        if (meshPhi0.valid())
+        {
+            phi -= meshPhi0;
+        }
 
         if (mesh.changing() && checkMeshCourantNo)
         {
