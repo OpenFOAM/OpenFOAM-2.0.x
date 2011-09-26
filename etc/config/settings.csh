@@ -481,7 +481,7 @@ case QSMPI:
     breaksw
 
 case SGIMPI:
-    setenv FOAM_MPI ${MPI_ROOT##*/}
+    setenv FOAM_MPI ${MPI_ROOT:t}
     setenv MPI_ARCH_PATH $MPI_ROOT
 
     _foamAddPath    $MPI_ARCH_PATH/bin
