@@ -114,27 +114,39 @@ void Foam::regionModels::regionModel::initialise()
             const directMappedWallPolyPatch& dmp =
                 refCast<const directMappedWallPolyPatch>(regionPatch);
 
-            const label primaryPatchI = dmp.samplePolyPatch().index();
-            primaryPatchIDs.append(primaryPatchI);
+            const word& primPatch =  dmp.samplePatch();
 
-            mappedPatches_.set
-            (
-                patchI,
-                new directMappedPatchBase
+            if (pbm.findPatchID(primPatch) != -1)
+            {
+                const label primaryPatchI = dmp.samplePolyPatch().index();
+                primaryPatchIDs.append(primaryPatchI);
+
+                mappedPatches_.set
                 (
-                    pbm[primaryPatchI],
-                    regionMesh().name(),
-                    directMappedPatchBase::NEARESTPATCHFACE,
-                    regionPatch.name(),
-                    vector::zero
-                )
-            );
+                    patchI,
+                    new directMappedPatchBase
+                    (
+                        pbm[primaryPatchI],
+                        regionMesh().name(),
+                        directMappedPatchBase::NEARESTPATCHFACE,
+                        regionPatch.name(),
+                        vector::zero
+                    )
+                );
+            }
+            else
+            {
+                if (debug)
+                {
+                    Info<< "No mapping from local region patch " << dmp.name()
+                        << " to primary region" << endl;
+                }
+            }
         }
     }
 
     primaryPatchIDs_.transfer(primaryPatchIDs);
     intCoupledPatchIDs_.transfer(intCoupledPatchIDs);
-//    mappedPatches_.resize(nCoupledPatches);
 
     if (nBoundaryFaces == 0)
     {
