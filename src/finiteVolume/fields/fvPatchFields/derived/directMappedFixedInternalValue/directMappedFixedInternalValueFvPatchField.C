@@ -113,31 +113,73 @@ void Foam::directMappedFixedInternalValueFvPatchField<Type>::updateCoeffs()
     // Get the coupling information from the directMappedPatchBase
     const directMappedPatchBase& mpp =
         refCast<const directMappedPatchBase>(this->patch().patch());
-    const fvMesh& nbrMesh = refCast<const fvMesh>(mpp.sampleMesh());
-    const label samplePatchI = mpp.samplePolyPatch().index();
-    const fvPatch& nbrPatch = nbrMesh.boundary()[samplePatchI];
-
-    // Force recalculation of mapping and schedule
     const mapDistribute& distMap = mpp.map();
+    const fvMesh& nbrMesh = refCast<const fvMesh>(mpp.sampleMesh());
 
-    // Retrieve the neighbour field
-    const fvPatchField<Type>& nbrField =
-        nbrPatch.template lookupPatchField<FieldType, Type>
-        (
-            this->dimensionedInternalField().name()
-        );
+    Field<Type> nbrIntFld;
 
-    // Retrieve the neighbour patch internal field
-    Field<Type> nbrIntFld(nbrField.patchInternalField());
-    mapDistribute::distribute
-    (
-        Pstream::defaultCommsType,
-        distMap.schedule(),
-        distMap.constructSize(),
-        distMap.subMap(),           // what to send
-        distMap.constructMap(),     // what to receive
-        nbrIntFld
-    );
+    switch (mpp.mode())
+    {
+        case directMappedPatchBase::NEARESTCELL:
+        {
+            FatalErrorIn
+            (
+                "void directMappedFixedValueFvPatchField<Type>::"
+                "updateCoeffs()"
+            )<< "Cannot apply "
+             << directMappedPatchBase::sampleModeNames_
+                [
+                    directMappedPatchBase::NEARESTCELL
+                ]
+             << " mapping mode for patch " << mpp.samplePatch()
+             << exit(FatalError);
+
+            break;
+        }
+        case directMappedPatchBase::NEARESTPATCHFACE:
+        {
+            const label samplePatchI = mpp.samplePolyPatch().index();
+            const fvPatchField<Type>& nbrPatchField =
+                this->sampleField().boundaryField()[samplePatchI];
+            nbrIntFld = nbrPatchField.patchInternalField();
+            distMap.distribute(nbrIntFld);
+
+            break;
+        }
+        case directMappedPatchBase::NEARESTFACE:
+        {
+            Field<Type> allValues(nbrMesh.nFaces(), pTraits<Type>::zero);
+
+            const FieldType& nbrField = this->sampleField();
+
+            forAll(nbrField.boundaryField(), patchI)
+            {
+                const fvPatchField<Type>& pf = nbrField.boundaryField()[patchI];
+                const Field<Type> pif(pf.patchInternalField());
+
+                label faceStart = pf.patch().start();
+
+                forAll(pf, faceI)
+                {
+                    allValues[faceStart++] = pif[faceI];
+                }
+            }
+
+            distMap.distribute(allValues);
+            nbrIntFld.transfer(allValues);
+
+            break;
+        }
+        default:
+        {
+            FatalErrorIn
+            (
+                "directMappedFixedValueFvPatchField<Type>::updateCoeffs()"
+            )<< "Unknown sampling mode: " << mpp.mode()
+             << nl << abort(FatalError);
+        }
+    }
+
 
     // Restore tag
     UPstream::msgType() = oldTag;
