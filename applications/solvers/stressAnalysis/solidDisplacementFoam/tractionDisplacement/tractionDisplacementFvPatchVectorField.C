@@ -149,6 +149,7 @@ void tractionDisplacementFvPatchVectorField::updateCoeffs()
     const dictionary& thermalProperties =
         db().lookupObject<IOdictionary>("thermalProperties");
 
+/*
     dimensionedScalar rho(mechanicalProperties.lookup("rho"));
     dimensionedScalar rhoE(mechanicalProperties.lookup("E"));
     dimensionedScalar nu(mechanicalProperties.lookup("nu"));
@@ -157,6 +158,21 @@ void tractionDisplacementFvPatchVectorField::updateCoeffs()
     dimensionedScalar mu = E/(2.0*(1.0 + nu));
     dimensionedScalar lambda = nu*E/((1.0 + nu)*(1.0 - 2.0*nu));
     dimensionedScalar threeK = E/(1.0 - 2.0*nu);
+*/
+
+    const fvPatchField<scalar>& rho =
+        patch().lookupPatchField<volScalarField, scalar>("rho");
+
+    const fvPatchField<scalar>& rhoE =
+        patch().lookupPatchField<volScalarField, scalar>("E");
+
+    const fvPatchField<scalar>& nu =
+        patch().lookupPatchField<volScalarField, scalar>("nu");
+
+    scalarField E = rhoE/rho;
+    scalarField mu = E/(2.0*(1.0 + nu));
+    scalarField lambda = nu*E/((1.0 + nu)*(1.0 - 2.0*nu));
+    scalarField threeK = E/(1.0 - 2.0*nu);
 
     Switch planeStress(mechanicalProperties.lookup("planeStress"));
 
@@ -166,7 +182,7 @@ void tractionDisplacementFvPatchVectorField::updateCoeffs()
         threeK = E/(1.0 - nu);
     }
 
-    scalar twoMuLambda = (2*mu + lambda).value();
+    scalarField twoMuLambda = (2*mu + lambda);
 
     vectorField n(patch().nf());
 
@@ -175,7 +191,7 @@ void tractionDisplacementFvPatchVectorField::updateCoeffs()
 
     gradient() =
     (
-        (traction_ + pressure_*n)/rho.value()
+        (traction_ + pressure_*n)/rho
       + twoMuLambda*fvPatchField<vector>::snGrad() - (n & sigmaD)
     )/twoMuLambda;
 
@@ -183,13 +199,17 @@ void tractionDisplacementFvPatchVectorField::updateCoeffs()
 
     if (thermalStress)
     {
-        dimensionedScalar alpha(thermalProperties.lookup("alpha"));
-        dimensionedScalar threeKalpha = threeK*alpha;
+        //dimensionedScalar alpha(thermalProperties.lookup("alpha"));
+        const fvPatchField<scalar>& alpha =
+            patch().lookupPatchField<volScalarField, scalar>("alpha");
+
+        //dimensionedScalar threeKalpha = threeK*alpha;
+        scalarField threeKalpha = threeK*alpha;
 
         const fvPatchField<scalar>& T =
             patch().lookupPatchField<volScalarField, scalar>("T");
 
-        gradient() += n*threeKalpha.value()*T/twoMuLambda;
+        gradient() += n*threeKalpha*T/twoMuLambda;
     }
 
     fixedGradientFvPatchVectorField::updateCoeffs();

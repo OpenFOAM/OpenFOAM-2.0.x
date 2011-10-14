@@ -323,10 +323,13 @@ public:
         // Evaluation
 
             //- Add source term to vector fvMatrix
-            virtual void addSu(fvMatrix<vector>& Eqn) = 0;
+            virtual void addSu(fvMatrix<vector>& Eqn);
 
             //- Add source term to scalar fvMatrix
-            virtual void addSu(fvMatrix<scalar>& Eqn) = 0;
+            virtual void addSu(fvMatrix<scalar>& Eqn);
+
+            //- Set constant value on field
+            virtual void setValue(fvMatrix<scalar>& Eq);
 
 
         // I-O
