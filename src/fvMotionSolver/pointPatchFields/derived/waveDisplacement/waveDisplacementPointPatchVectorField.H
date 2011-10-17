@@ -55,7 +55,7 @@ class waveDisplacementPointPatchVectorField
 
         vector amplitude_;
         scalar omega_;
-        vector waveLength_;
+        vector waveNumber_;
 
 
 public:
