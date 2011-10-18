@@ -74,6 +74,7 @@ SourceFiles
 #include "fvPatchFields.H"
 #include "fixedValueFvPatchFields.H"
 
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
@@ -113,7 +114,7 @@ class atmBoundaryLayerInletVelocityFvPatchVectorField
         const scalar Href_;
 
         //- Minimum corrdinate value in z direction
-        const scalar zGround_;
+        scalarField zGround_;
 
 
 public:

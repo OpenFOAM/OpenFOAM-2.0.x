@@ -29,6 +29,7 @@ License
 #include "fvPatchFieldMapper.H"
 #include "volFields.H"
 #include "surfaceFields.H"
+#include "wallDist.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -95,7 +96,7 @@ atmBoundaryLayerInletVelocityFvPatchVectorField
     kappa_(dict.lookupOrDefault<scalar>("kappa", 0.41)),
     Uref_(readScalar(dict.lookup("Uref"))),
     Href_(readScalar(dict.lookup("Href"))),
-    zGround_(readScalar(dict.lookup("zGround")))
+    zGround_(p.size(), 0.0)
 {
     if (mag(n_) < SMALL || mag(z_) < SMALL || mag(z0_) < SMALL)
     {
@@ -114,6 +115,11 @@ atmBoundaryLayerInletVelocityFvPatchVectorField
 
     n_ /= mag(n_);
     z_ /= mag(z_);
+
+    const vectorField& c = patch().Cf();
+    const scalarField coord(c & z_);
+    wallDist wall(iF.mesh());
+    zGround_ = coord - wall.boundaryField()[patch().index()];
 
     Ustar_ = kappa_*Uref_/(log((Href_  + z0_)/min(z0_ , 0.001)));
 
@@ -146,13 +152,20 @@ void atmBoundaryLayerInletVelocityFvPatchVectorField::updateCoeffs()
 {
     const vectorField& c = patch().Cf();
     const scalarField coord(c & z_);
+
+    if (patch().boundaryMesh().mesh().changing())
+    {
+        wallDist wall(patch().boundaryMesh().mesh());
+        zGround_ = coord - wall.boundaryField()[patch().index()];
+    }
+
     scalarField Un(coord.size());
 
     forAll(coord, i)
     {
-        if ((coord[i] - zGround_) < Href_)
+        if ((coord[i] - zGround_[i]) < Href_)
         {
-            Un[i] = (Ustar_/kappa_)*log((coord[i] - zGround_ + z0_)/z0_);
+            Un[i] = (Ustar_/kappa_)*log((coord[i] - zGround_[i] + z0_)/z0_);
         }
         else
         {
@@ -181,8 +194,7 @@ void atmBoundaryLayerInletVelocityFvPatchVectorField::write(Ostream& os) const
         << Uref_ << token::END_STATEMENT << nl;
     os.writeKeyword("Href")
         << Href_ << token::END_STATEMENT << nl;
-    os.writeKeyword("zGround")
-        << zGround_ << token::END_STATEMENT << nl;
+    zGround_.writeEntry("zGround", os) ;
     writeEntry("value", os);
 }
 

@@ -29,6 +29,7 @@ License
 #include "fvPatchFieldMapper.H"
 #include "volFields.H"
 #include "surfaceFields.H"
+#include "wallDist.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -86,7 +87,7 @@ atmBoundaryLayerInletEpsilonFvPatchScalarField
     z_(dict.lookup("z")),
     z0_(readScalar(dict.lookup("z0"))),
     kappa_(dict.lookupOrDefault<scalar>("kappa", 0.41)),
-    zGround_(readScalar(dict.lookup("zGround")))
+    zGround_(p.size(), 0.0)
 {
     if (mag(z_) < SMALL)
     {
@@ -104,6 +105,11 @@ atmBoundaryLayerInletEpsilonFvPatchScalarField
     }
 
     z_ /= mag(z_);
+
+    const vectorField& c = patch().Cf();
+    const scalarField coord(c & z_);
+    wallDist wall(iF.mesh());
+    zGround_ = coord - wall.boundaryField()[patch().index()];
 
     evaluate();
 }
@@ -130,7 +136,14 @@ atmBoundaryLayerInletEpsilonFvPatchScalarField
 void atmBoundaryLayerInletEpsilonFvPatchScalarField::updateCoeffs()
 {
     const vectorField& c = patch().Cf();
-    tmp<scalarField> coord = (c & z_);
+    const scalarField coord(c & z_);
+
+    if (patch().boundaryMesh().mesh().changing())
+    {
+        wallDist wall(patch().boundaryMesh().mesh());
+        zGround_ = coord - wall.boundaryField()[patch().index()];
+    }
+
     scalarField::operator=(pow3(Ustar_)/(kappa_*(coord - zGround_ + z0_)));
 }
 
