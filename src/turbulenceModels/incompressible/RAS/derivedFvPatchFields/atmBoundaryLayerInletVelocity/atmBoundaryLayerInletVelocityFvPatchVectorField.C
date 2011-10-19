@@ -29,7 +29,6 @@ License
 #include "fvPatchFieldMapper.H"
 #include "volFields.H"
 #include "surfaceFields.H"
-#include "wallDist.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -96,7 +95,7 @@ atmBoundaryLayerInletVelocityFvPatchVectorField
     kappa_(dict.lookupOrDefault<scalar>("kappa", 0.41)),
     Uref_(readScalar(dict.lookup("Uref"))),
     Href_(readScalar(dict.lookup("Href"))),
-    zGround_(p.size(), 0.0)
+    zGround_("zGround", dict, p.size())
 {
     if (mag(n_) < SMALL || mag(z_) < SMALL || mag(z0_) < SMALL)
     {
@@ -116,12 +115,7 @@ atmBoundaryLayerInletVelocityFvPatchVectorField
     n_ /= mag(n_);
     z_ /= mag(z_);
 
-    const vectorField& c = patch().Cf();
-    const scalarField coord(c & z_);
-    wallDist wall(iF.mesh());
-    zGround_ = coord - wall.boundaryField()[patch().index()];
-
-    Ustar_ = kappa_*Uref_/(log((Href_  + z0_)/min(z0_ , 0.001)));
+    Ustar_ = kappa_*Uref_/(log((Href_  + z0_)/max(z0_ , 0.001)));
 
     evaluate();
 }
@@ -153,11 +147,6 @@ void atmBoundaryLayerInletVelocityFvPatchVectorField::updateCoeffs()
     const vectorField& c = patch().Cf();
     const scalarField coord(c & z_);
 
-    if (patch().boundaryMesh().mesh().changing())
-    {
-        wallDist wall(patch().boundaryMesh().mesh());
-        zGround_ = coord - wall.boundaryField()[patch().index()];
-    }
 
     scalarField Un(coord.size());
 
@@ -165,7 +154,9 @@ void atmBoundaryLayerInletVelocityFvPatchVectorField::updateCoeffs()
     {
         if ((coord[i] - zGround_[i]) < Href_)
         {
-            Un[i] = (Ustar_/kappa_)*log((coord[i] - zGround_[i] + z0_)/z0_);
+            Un[i] =
+                (Ustar_/kappa_)
+              * log((coord[i] - zGround_[i] + z0_)/max(z0_, 0.001));
         }
         else
         {
