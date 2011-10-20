@@ -95,7 +95,7 @@ atmBoundaryLayerInletVelocityFvPatchVectorField
     kappa_(dict.lookupOrDefault<scalar>("kappa", 0.41)),
     Uref_(readScalar(dict.lookup("Uref"))),
     Href_(readScalar(dict.lookup("Href"))),
-    zGround_(readScalar(dict.lookup("zGround")))
+    zGround_("zGround", dict, p.size())
 {
     if (mag(n_) < SMALL || mag(z_) < SMALL || mag(z0_) < SMALL)
     {
@@ -115,7 +115,7 @@ atmBoundaryLayerInletVelocityFvPatchVectorField
     n_ /= mag(n_);
     z_ /= mag(z_);
 
-    Ustar_ = kappa_*Uref_/(log((Href_  + z0_)/min(z0_ , 0.001)));
+    Ustar_ = kappa_*Uref_/(log((Href_  + z0_)/max(z0_ , 0.001)));
 
     evaluate();
 }
@@ -146,13 +146,17 @@ void atmBoundaryLayerInletVelocityFvPatchVectorField::updateCoeffs()
 {
     const vectorField& c = patch().Cf();
     const scalarField coord(c & z_);
+
+
     scalarField Un(coord.size());
 
     forAll(coord, i)
     {
-        if ((coord[i] - zGround_) < Href_)
+        if ((coord[i] - zGround_[i]) < Href_)
         {
-            Un[i] = (Ustar_/kappa_)*log((coord[i] - zGround_ + z0_)/z0_);
+            Un[i] =
+                (Ustar_/kappa_)
+              * log((coord[i] - zGround_[i] + z0_)/max(z0_, 0.001));
         }
         else
         {
@@ -181,8 +185,7 @@ void atmBoundaryLayerInletVelocityFvPatchVectorField::write(Ostream& os) const
         << Uref_ << token::END_STATEMENT << nl;
     os.writeKeyword("Href")
         << Href_ << token::END_STATEMENT << nl;
-    os.writeKeyword("zGround")
-        << zGround_ << token::END_STATEMENT << nl;
+    zGround_.writeEntry("zGround", os) ;
     writeEntry("value", os);
 }
 
