@@ -222,12 +222,7 @@ fi
 case "${foamCompiler}" in
 OpenFOAM | ThirdParty)
     case "$WM_COMPILER" in
-    Gcc | Gcc++0x)
-        gcc_version=gcc-4.4.3
-        gmp_version=gmp-5.0.1
-        mpfr_version=mpfr-2.4.2
-        ;;
-    Gcc46 | Gcc46++0x)
+    Gcc | Gcc++0x | Gcc46 | Gcc46++0x)
         gcc_version=gcc-4.6.1
         gmp_version=gmp-5.0.1
         mpfr_version=mpfr-2.4.2
@@ -512,7 +507,7 @@ SGIMPI)
     export FOAM_MPI=${MPI_ROOT##*/}
     export MPI_ARCH_PATH=$MPI_ROOT
 
-    if [ -d "$MPI_ROOT" -o -z "$MPI_ARCH_PATH" ]
+    if [ ! -d "$MPI_ROOT" -o -z "$MPI_ARCH_PATH" ]
     then
         echo "Warning in $WM_PROJECT_DIR/etc/config/settings.sh:" 1>&2
         echo "    MPI_ROOT not a valid mpt installation directory or ending in a '/'." 1>&2

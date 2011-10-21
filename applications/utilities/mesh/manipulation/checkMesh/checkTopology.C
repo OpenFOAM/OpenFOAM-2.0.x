@@ -33,10 +33,11 @@ Foam::label Foam::checkTopology
             }
         }
         reduce(nEmpty, sumOp<label>());
+
         label nTotCells = returnReduce(mesh.cells().size(), sumOp<label>());
 
         // These are actually warnings, not errors.
-        if (nEmpty % nTotCells)
+        if (nTotCells && (nEmpty % nTotCells))
         {
             Info<< " ***Total number of faces on empty patches"
                 << " is not divisible by the number of cells in the mesh."
@@ -255,7 +256,7 @@ Foam::label Foam::checkTopology
     {
         regionSplit rs(mesh);
 
-        if (rs.nRegions() == 1)
+        if (rs.nRegions() <= 1)
         {
             Info<< "    Number of regions: " << rs.nRegions() << " (OK)."
                 << endl;

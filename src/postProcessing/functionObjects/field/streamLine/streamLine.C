@@ -291,7 +291,14 @@ void Foam::streamLine::read(const dictionary& dict)
     {
         //dict_ = dict;
         dict.lookup("fields") >> fields_;
-        UName_ = dict.lookupOrDefault<word>("U", "U");
+        if (dict.found("UName"))
+        {
+            dict.lookup("UName") >> UName_;
+        }
+        else
+        {
+            UName_ = dict.lookupOrDefault<word>("U", "U");
+        }
         dict.lookup("trackForward") >> trackForward_;
         dict.lookup("lifeTime") >> lifeTime_;
         if (lifeTime_ < 1)
