@@ -22,23 +22,20 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::codedFunctionObject
+    Foam::codedBaseClass
 
 Description
-    functionObject using dynamic code compilation.
+    Base class for function objects and boundary conditions using dynamic code
 
 SourceFiles
-    codedFunctionObject.C
+    codedBaseClass.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef codedFunctionObject_H
-#define codedFunctionObject_H
+#ifndef codedBaseClass_H
+#define codedBaseClass_H
 
-#include "pointFieldFwd.H"
-#include "functionObject.H"
 #include "dictionary.H"
-#include "codedBaseClass.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -48,100 +45,113 @@ namespace Foam
 // Forward declaration of classes
 class objectRegistry;
 class dictionary;
-class mapPolyMesh;
+class dynamicCode;
+class dynamicCodeContext;
 class IOdictionary;
+class dlLibraryTable;
 
 /*---------------------------------------------------------------------------*\
-                       Class codedFunctionObject Declaration
+                       Class codedBaseClass Declaration
 \*---------------------------------------------------------------------------*/
 
-class codedFunctionObject
-:
-    public functionObject,
-    public codedBaseClass
+class codedBaseClass
 {
 protected:
 
     // Protected data
 
-        //- Reference to the time database
-        const Time& time_;
+        //- Input dictionary
+        dictionary dict_;
 
-        string codeRead_;
-        string codeExecute_;
-        string codeEnd_;
+        mutable word redirectType_;
 
-        //- Underlying functionObject
-        mutable autoPtr<functionObject> redirectFunctionObjectPtr_;
+        //- Previously loaded library
+        mutable fileName oldLibPath_;
+
+//         //- Underlying functionObject
+//         mutable autoPtr<functionObject> redirectFunctionObjectPtr_;
 
     // Private Member Functions
 
+        const IOdictionary& dict() const;
+
+        //- Global loader/unloader function type
+        typedef void (*loaderFunctionType)(bool);
+
+        //- Load specified library and execute globalFuncName(true)
+        void* loadLibrary
+        (
+            const fileName& libPath,
+            const string& globalFuncName,
+            const dictionary& contextDict
+        ) const;
+
+        //- Execute globalFuncName(false) and unload specified library
+        void unloadLibrary
+        (
+            const fileName& libPath,
+            const string& globalFuncName,
+            const dictionary& contextDict
+        ) const;
+
+
+        //- Create library based on the dynamicCodeContext
+        void createLibrary(dynamicCode&, const dynamicCodeContext&) const;
+
+        //- Update library as required
+        void updateLibrary() const;
+
         //- Read relevant dictionary entries
-    //        void readDict();
+        // void readDict();
 
         //- get the loaded dynamic libraries
-        dlLibraryTable& libs() const;
+        virtual dlLibraryTable& libs() const = 0;
 
         //- adapt the context for the current object
-        void prepare(dynamicCode &,const dynamicCodeContext&) const;
+        virtual void prepare(
+            dynamicCode &,
+            const dynamicCodeContext &
+        ) const = 0;
       
         // Return a description (type + name) for the output
-        string description() const;
+        virtual string description() const = 0;
 
         // Clear the ptr to the redirected object
-        void clearRedirectPtr() const;
+        virtual void clearRedirectPtr() const = 0;
 
         // Get the dictionary to initialize the codeContext
-        const dictionary &codeDict() const;
+        virtual const dictionary &codeDict() const = 0;
 
         //- Disallow default bitwise copy construct
-        codedFunctionObject(const codedFunctionObject&);
+        codedBaseClass(const codedBaseClass&);
 
         //- Disallow default bitwise assignment
-        void operator=(const codedFunctionObject&);
+        void operator=(const codedBaseClass&);
 
 
 public:
 
-    //- Runtime type information
-    TypeName("coded");
-
-
     // Constructors
 
-        //- Construct for given objectRegistry and dictionary.
-        //  Allow the possibility to load fields from files
-        codedFunctionObject
+        //- Construct for given dictionary.
+        codedBaseClass
         (
-            const word& name,
-            const Time& time,
-            const dictionary& dict,
-            bool readNow=true   // allow child-classes to avoid compilation
+            const dictionary& dict
         );
 
+        //- Empty constructor
+        codedBaseClass
+        ();
 
     //- Destructor
-    virtual ~codedFunctionObject();
+    virtual ~codedBaseClass();
 
 
     // Member Functions
 
-        //- Dynamically compiled functionObject
-        functionObject& redirectFunctionObject() const;
+//         //- Dynamically compiled functionObject
+//         functionObject& redirectFunctionObject() const;
 
-        //- Called at the start of the time-loop
-        virtual bool start();
-
-        //- Called at each ++ or += of the time-loop. forceWrite overrides the
-        //  outputControl behaviour.
-        virtual bool execute(const bool forceWrite);
-
-        //- Called when Time::run() determines that the time-loop exits.
-        //  By default it simply calls execute().
-        virtual bool end();
-
-        //- Read and set the function object if its data have changed
-        virtual bool read(const dictionary&);
 };
 
 
