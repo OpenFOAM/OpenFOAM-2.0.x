@@ -20,9 +20,14 @@ d2dt2Schemes
     default         steadyState;
 }
 
+ddtSchemes
+{
+    default         Euler;
+}
+
 gradSchemes
 {
-    default         leastSquares;
+    default        leastSquares;
     grad(D)         leastSquares;
     grad(T)         leastSquares;
 }
