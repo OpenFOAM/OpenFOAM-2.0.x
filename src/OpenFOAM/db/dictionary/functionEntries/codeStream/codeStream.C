@@ -158,8 +158,8 @@ bool Foam::functionEntries::codeStream::execute
         }
         else
         {
-            // Uncached opening of libPath
-            lib = dlOpen(libPath);
+            // Uncached opening of libPath. Do not complain if cannot be loaded
+            lib = dlOpen(libPath, false);
         }
     }
 
@@ -254,7 +254,7 @@ bool Foam::functionEntries::codeStream::execute
         else
         {
             // Uncached opening of libPath
-            lib = dlOpen(libPath);
+            lib = dlOpen(libPath, true);
         }
     }
 
