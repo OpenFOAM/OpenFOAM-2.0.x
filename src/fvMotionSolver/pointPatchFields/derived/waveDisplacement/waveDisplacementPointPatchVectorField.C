@@ -61,7 +61,7 @@ waveDisplacementPointPatchVectorField
     fixedValuePointPatchField<vector>(p, iF, dict),
     amplitude_(dict.lookup("amplitude")),
     omega_(readScalar(dict.lookup("omega"))),
-    waveNumber_(dict.lookupOrDefault<vector>("waveLength", vector::zero))
+    waveNumber_(dict.lookup("waveNumber"))
 {
     if (!dict.found("value"))
     {
