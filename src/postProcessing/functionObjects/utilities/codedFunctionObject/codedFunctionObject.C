@@ -64,21 +64,21 @@ void Foam::codedFunctionObject::prepare
     dynCode.setFilterVariable("codeExecute", codeExecute_);
     dynCode.setFilterVariable("codeEnd", codeEnd_);
     //dynCode.setFilterVariable("codeWrite", codeWrite_);
-    
+
     // compile filtered C template
     dynCode.addCompileFile("functionObjectTemplate.C");
     dynCode.addCompileFile("FilterFunctionObjectTemplate.C");
-    
+
     // copy filtered H template
     dynCode.addCopyFile("FilterFunctionObjectTemplate.H");
     dynCode.addCopyFile("functionObjectTemplate.H");
     dynCode.addCopyFile("IOfunctionObjectTemplate.H");
-    
+
     // debugging: make BC verbose
     //         dynCode.setFilterVariable("verbose", "true");
     //         Info<<"compile " << redirectType_ << " sha1: "
     //             << context.sha1() << endl;
-    
+
     // define Make/options
     dynCode.setMakeOptions
         (
@@ -129,7 +129,8 @@ Foam::codedFunctionObject::codedFunctionObject
 :
     functionObject(name),
     codedBase(),
-    time_(time)
+    time_(time),
+    dict_(dict)
 {
     if (readNow)
     {
