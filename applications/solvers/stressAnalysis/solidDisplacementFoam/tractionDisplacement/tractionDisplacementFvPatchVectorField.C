@@ -149,16 +149,6 @@ void tractionDisplacementFvPatchVectorField::updateCoeffs()
     const dictionary& thermalProperties =
         db().lookupObject<IOdictionary>("thermalProperties");
 
-/*
-    dimensionedScalar rho(mechanicalProperties.lookup("rho"));
-    dimensionedScalar rhoE(mechanicalProperties.lookup("E"));
-    dimensionedScalar nu(mechanicalProperties.lookup("nu"));
-
-    dimensionedScalar E = rhoE/rho;
-    dimensionedScalar mu = E/(2.0*(1.0 + nu));
-    dimensionedScalar lambda = nu*E/((1.0 + nu)*(1.0 - 2.0*nu));
-    dimensionedScalar threeK = E/(1.0 - 2.0*nu);
-*/
 
     const fvPatchField<scalar>& rho =
         patch().lookupPatchField<volScalarField, scalar>("rho");
@@ -199,12 +189,8 @@ void tractionDisplacementFvPatchVectorField::updateCoeffs()
 
     if (thermalStress)
     {
-        //dimensionedScalar alpha(thermalProperties.lookup("alpha"));
-        const fvPatchField<scalar>& alpha =
-            patch().lookupPatchField<volScalarField, scalar>("alpha");
-
-        //dimensionedScalar threeKalpha = threeK*alpha;
-        scalarField threeKalpha = threeK*alpha;
+        const fvPatchField<scalar>&  threeKalpha=
+            patch().lookupPatchField<volScalarField, scalar>("threeKalpha");
 
         const fvPatchField<scalar>& T =
             patch().lookupPatchField<volScalarField, scalar>("T");

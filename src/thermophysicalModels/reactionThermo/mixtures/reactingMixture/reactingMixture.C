@@ -53,13 +53,6 @@ Foam::reactingMixture<ThermoType>::reactingMixture
     )
 {
     autoPtr<chemistryReader<ThermoType> >::clear();
-
-    forAll(*this, i)
-    {
-        Info<< "Reaction[" << i << "]: ";
-        this->operator[](i).write(Info);
-        Info<< endl;
-    }
 }
 
 
