@@ -46,7 +46,7 @@ namespace Foam
 
 // Forward declaration of classes
 class polyMesh;
-class treeDataCell;
+class treeDataPolyMeshCell;
 class treeDataFace;
 template<class Type> class indexedOctree;
 class treeBoundBox;
@@ -70,7 +70,7 @@ class meshSearch
 
         //- demand driven octrees
         mutable autoPtr<indexedOctree<treeDataFace> > boundaryTreePtr_;
-        mutable autoPtr<indexedOctree<treeDataCell> > cellTreePtr_;
+        mutable autoPtr<indexedOctree<treeDataPolyMeshCell> > cellTreePtr_;
 
 
     // Private Member Functions
@@ -198,7 +198,7 @@ public:
             const indexedOctree<treeDataFace>& boundaryTree() const;
 
             //- Get (demand driven) reference to octree holding all cells
-            const indexedOctree<treeDataCell>& cellTree() const;
+            const indexedOctree<treeDataPolyMeshCell>& cellTree() const;
 
 
         // Queries

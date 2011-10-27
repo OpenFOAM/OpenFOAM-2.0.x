@@ -28,7 +28,7 @@ License
 #include "indexedOctree.H"
 #include "DynamicList.H"
 #include "demandDrivenData.H"
-#include "treeDataCell.H"
+#include "treeDataPolyMeshCell.H"
 #include "treeDataFace.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -98,7 +98,7 @@ bool Foam::meshSearch::findNearer
 // tree based searching
 Foam::label Foam::meshSearch::findNearestCellTree(const point& location) const
 {
-    const indexedOctree<treeDataCell>& tree = cellTree();
+    const indexedOctree<treeDataPolyMeshCell>& tree = cellTree();
 
     pointIndexHit info = tree.findNearest
     (
@@ -177,7 +177,7 @@ Foam::label Foam::meshSearch::findNearestCellWalk
 Foam::label Foam::meshSearch::findNearestFaceTree(const point& location) const
 {
     // Search nearest cell centre.
-    const indexedOctree<treeDataCell>& tree = cellTree();
+    const indexedOctree<treeDataPolyMeshCell>& tree = cellTree();
 
     // Search with decent span
     pointIndexHit info = tree.findNearest
@@ -585,8 +585,8 @@ const Foam::indexedOctree<Foam::treeDataFace>& Foam::meshSearch::boundaryTree()
 }
 
 
-const Foam::indexedOctree<Foam::treeDataCell>& Foam::meshSearch::cellTree()
-const
+const Foam::indexedOctree<Foam::treeDataPolyMeshCell>&
+Foam::meshSearch::cellTree() const
 {
     if (!cellTreePtr_.valid())
     {
@@ -611,9 +611,9 @@ const
 
         cellTreePtr_.reset
         (
-            new indexedOctree<treeDataCell>
+            new indexedOctree<treeDataPolyMeshCell>
             (
-                treeDataCell
+                treeDataPolyMeshCell
                 (
                     false,  // not cache bb
                     mesh_

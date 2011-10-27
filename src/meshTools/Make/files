@@ -52,6 +52,7 @@ octree/treeLeafName.C
 indexedOctree/treeDataEdge.C
 indexedOctree/treeDataFace.C
 indexedOctree/treeDataPoint.C
+indexedOctree/treeDataPolyMeshCell.C
 indexedOctree/treeDataPrimitivePatchName.C
 indexedOctree/treeDataTriSurface.C
 
