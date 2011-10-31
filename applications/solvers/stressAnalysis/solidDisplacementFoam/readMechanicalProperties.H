@@ -20,7 +20,7 @@
         IOobject
         (
             "rho",
-            runTime.timeName(),
+            runTime.timeName(0),
             mesh,
             IOobject::READ_IF_PRESENT,
             IOobject::NO_WRITE
