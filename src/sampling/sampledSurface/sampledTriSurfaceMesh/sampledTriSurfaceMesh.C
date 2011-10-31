@@ -27,7 +27,7 @@ License
 #include "meshSearch.H"
 #include "Tuple2.H"
 #include "globalIndex.H"
-#include "treeDataCell.H"
+#include "treeDataPolyMeshCell.H"
 #include "treeDataFace.H"
 #include "meshTools.H"
 
@@ -265,7 +265,8 @@ bool Foam::sampledTriSurfaceMesh::update()
     {
         // Search for nearest cell
 
-        const indexedOctree<treeDataCell>& cellTree = meshSearcher.cellTree();
+        const indexedOctree<treeDataPolyMeshCell>& cellTree =
+            meshSearcher.cellTree();
 
         forAll(fc, triI)
         {
