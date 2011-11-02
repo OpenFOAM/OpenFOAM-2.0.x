@@ -151,7 +151,7 @@ Foam::XiEqModel::calculateSchelkinEffect() const
 
     volScalarField& N = tN();
 
-    N.internalField() = Nv.internalField()*mesh.V();
+    N.internalField() = Nv.internalField()*pow(mesh.V(), 2.0/3.0);
 
     tmp<volSymmTensorField> tns
     (
@@ -177,7 +177,7 @@ Foam::XiEqModel::calculateSchelkinEffect() const
 
     volSymmTensorField& ns = tns();
 
-    ns.internalField() = nsv.internalField()*mesh.V();
+    ns.internalField() = nsv.internalField()*pow(mesh.V(), 2.0/3.0);
 
     const volVectorField Uhat
     (
