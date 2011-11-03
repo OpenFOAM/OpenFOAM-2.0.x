@@ -21,47 +21,23 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
+Global
+    cumulativeAdjointContErr
+
 Description
-    Converts CHEMKINIII thermodynamics and reaction data files into
-    OpenFOAM format.
+    Declare and initialise the cumulative ddjoint continuity error.
 
 \*---------------------------------------------------------------------------*/
 
-#include "argList.H"
-#include "chemkinReader.H"
-#include "OFstream.H"
-
-using namespace Foam;
+#ifndef initAdjointContinuityErrs_H
+#define initAdjointContinuityErrs_H
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-// Main program:
 
-int main(int argc, char *argv[])
-{
-    argList::validArgs.append("CHEMKINFile");
-    argList::validArgs.append("CHEMKINThermodynamicsFile");
-    argList::validArgs.append("FOAMChemistryFile");
-    argList::validArgs.append("FOAMThermodynamicsFile");
-    argList args(argc, argv);
+scalar cumulativeAdjointContErr = 0;
 
-    speciesTable species;
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-    chemkinReader cr(args[1], species, args[2]);
-
-    OFstream reactionsFile(args[3]);
-    reactionsFile
-        << "species" << cr.species() << token::END_STATEMENT << nl << nl;
-
-    cr.reactions().write(reactionsFile);
-
-
-    OFstream thermoFile(args[4]);
-    cr.speciesThermo().write(thermoFile);
-
-    Info<< "End\n" << endl;
-
-    return 0;
-}
-
+#endif
 
 // ************************************************************************* //
