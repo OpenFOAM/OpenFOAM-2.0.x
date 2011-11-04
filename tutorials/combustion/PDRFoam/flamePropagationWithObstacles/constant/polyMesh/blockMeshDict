@@ -244,24 +244,4 @@ boundary
         type wall;
         faces ();
     }
-
-    baffleWall
-    {
-        type wall;
-        faces ();
-    }
-
-    baffleCyclic_half0
-    {
-        type cyclic;
-        neighbourPatch  baffleCyclic_half1;
-        faces ();
-    }
-
-    baffleCyclic_half1
-    {
-        type cyclic;
-        neighbourPatch  baffleCyclic_half0;
-        faces ();
-    }
 );

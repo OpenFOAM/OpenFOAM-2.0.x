@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.0.0                                 |
+|  \\    /   O peration     | Version:  2.0.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -36,27 +36,6 @@ boundaryField
     {
         type            fixedValue;
         value           uniform ( 0 0 0 );
-    }
-    baffleWall
-    {
-        type            activePressureForceBaffleVelocity;
-        value           uniform ( 0 0 0 );
-        cyclicPatch     baffleCyclic_half0;
-        orientation     1;
-        openingTime     0.01;
-        maxOpenFractionDelta 0.1;
-        openFraction    0;
-        p               p;
-        minThresholdValue 8000;
-        forceBased      0;
-    }
-    baffleCyclic_half0
-    {
-        type            cyclic;
-    }
-    baffleCyclic_half1
-    {
-        type            cyclic;
     }
 }
 

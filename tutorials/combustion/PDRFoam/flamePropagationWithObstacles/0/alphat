@@ -38,20 +38,6 @@ boundaryField
         Prt             0.85;
         value           nonuniform 0();
     }
-    baffleWall
-    {
-        type            alphatWallFunction;
-        Prt             0.85;
-        value           nonuniform 0();
-    }
-    baffleCyclic_half0
-    {
-        type            cyclic;
-    }
-    baffleCyclic_half1
-    {
-        type            cyclic;
-    }
 }
 
 

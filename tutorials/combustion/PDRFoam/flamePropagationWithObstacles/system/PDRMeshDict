@@ -18,14 +18,15 @@ FoamFile
 blockedFaces ((blockedFacesSet blockedFaces));
 
 //- Per faceSet the patch the faces should go into coupled baffles
+
 coupledFaces
 {
 
-    coupledFacesSet
-    {
-        wallPatchName               baffleWall;
-        cyclicMasterPatchName       baffleCyclic_half0;
-    }
+//    coupledFacesSet
+//    {
+//        wallPatchName               baffleWall;
+//        cyclicMasterPatchName       baffleCyclic_half0;
+//    }
 }
 
 //- Name of cellSet that holds the cells to fully remove

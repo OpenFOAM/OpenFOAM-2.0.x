@@ -38,7 +38,7 @@ Foam::autoPtr<Foam::PDRDragModel> Foam::PDRDragModel::New
 {
     const word modelType(PDRProperties.lookup("PDRDragModel"));
 
-    Info<< "Selecting flame-wrinkling model " << modelType << endl;
+    Info<< "Selecting PDR drag model " << modelType << endl;
 
     dictionaryConstructorTable::iterator cstrIter =
         dictionaryConstructorTablePtr_->find(modelType);

@@ -42,22 +42,6 @@ boundaryField
         E               9.8;
         value           nonuniform 0();
     }
-    baffleWall
-    {
-        type            mutkWallFunction;
-        Cmu             0.09;
-        kappa           0.41;
-        E               9.8;
-        value           nonuniform 0();
-    }
-    baffleCyclic_half0
-    {
-        type            cyclic;
-    }
-    baffleCyclic_half1
-    {
-        type            cyclic;
-    }
 }
 
 
