@@ -106,14 +106,6 @@ class FacePostProcessing
             const scalar totArea
         );
 
-        //- Return index into storage lists if valid zone and face
-        void applyToFace
-        (
-            const label faceIn,
-            label& zoneI, label&
-            faceI
-        ) const;
-
 
 protected:
 
