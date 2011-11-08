@@ -240,10 +240,8 @@ Foam::dynamicRefineFvMesh::refine
         }
     }
 
-
     // Update fields
     updateMesh(map);
-
     // Move mesh
     /*
     pointField newPoints;
@@ -333,6 +331,7 @@ Foam::dynamicRefineFvMesh::refine
             }
 
             surfaceScalarField& phi = const_cast<surfaceScalarField&>(*iter());
+
             const surfaceScalarField phiU
             (
                 fvc::interpolate
@@ -407,13 +406,14 @@ Foam::dynamicRefineFvMesh::refine
                     fvsPatchScalarField& patchPhi =
                         phi.boundaryField()[patchI];
 
-                    patchPhi[i] = patchPhiU[i];
+                    if (patchPhi.size() > 0)
+                    {
+                        patchPhi[i] = patchPhiU[i];
+                    }
                 }
             }
         }
     }
-
-
 
     // Update numbering of cells/vertices.
     meshCutter_.updateMesh(map);

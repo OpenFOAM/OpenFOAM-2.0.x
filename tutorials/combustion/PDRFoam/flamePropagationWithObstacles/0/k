@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.0.0                                 |
+|  \\    /   O peration     | Version:  2.0.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -37,18 +37,171 @@ boundaryField
         type            compressible::kqRWallFunction;
         value           uniform 1.5;
     }
-    baffleWall
+}
+
+Su
+{
+    boundaryField
     {
-        type            compressible::kqRWallFunction;
-        value           uniform 1.5;
+        blockedFaces
+        {
+            type            zeroGradient;
+        }
     }
-    baffleCyclic_half0
+}
+
+Xi
+{
+    boundaryField
     {
-        type            cyclic;
+        blockedFaces
+        {
+            type            zeroGradient;
+            value           uniform 1;
+        }
     }
-    baffleCyclic_half1
+}
+
+T
+{
+    boundaryField
     {
-        type            cyclic;
+        blockedFaces
+        {
+            type            zeroGradient;
+            value           uniform 300;
+        }
+    }
+}
+
+Tu
+{
+    boundaryField
+    {
+        blockedFaces
+        {
+            type            zeroGradient;
+            value           uniform 300;
+        }
+    }
+}
+
+b
+{
+    boundaryField
+    {
+        blockedFaces
+        {
+            type            zeroGradient;
+            value           uniform 1;
+        }
+    }
+}
+
+ft
+{
+    boundaryField
+    {
+        blockedFaces
+        {
+            type            zeroGradient;
+        }
+    }
+}
+
+Aw
+{
+    boundaryField
+    {
+        blockedFaces
+        {
+            type            zeroGradient;
+            value           uniform 0;
+        }
+    }
+}
+
+B
+{
+    boundaryField
+    {
+        blockedFaces
+        {
+            type            zeroGradient;
+            value           uniform ( 0 0 0 0 0 0 );
+        }
+    }
+}
+
+betav
+{
+    boundaryField
+    {
+        blockedFaces
+        {
+            type            zeroGradient;
+            value           uniform 0;
+        }
+    }
+}
+
+CR
+{
+    boundaryField
+    {
+        blockedFaces
+        {
+            type            zeroGradient;
+            value           uniform ( 0 0 0 0 0 0 );
+        }
+    }
+}
+
+CT
+{
+    boundaryField
+    {
+        blockedFaces
+        {
+            type            zeroGradient;
+            value           uniform ( 0 0 0 0 0 0 );
+        }
+    }
+}
+
+Nv
+{
+    boundaryField
+    {
+        blockedFaces
+        {
+            type            zeroGradient;
+            value           uniform 0;
+        }
+    }
+}
+
+nsv
+{
+    boundaryField
+    {
+        blockedFaces
+        {
+            type            zeroGradient;
+            value           uniform ( 0 0 0 0 0 0 );
+        }
+    }
+}
+
+Lobs
+{
+    boundaryField
+    {
+        blockedFaces
+        {
+            type            zeroGradient;
+            value           uniform 0;
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  2.0.0                                 |
+|  \\    /   O peration     | Version:  2.0.x                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -8064,19 +8064,6 @@ boundaryField
     {
         type            zeroGradient;
         value           uniform 0;
-    }
-    baffleWall
-    {
-        type            zeroGradient;
-        value           uniform 0;
-    }
-    baffleCyclic_half0
-    {
-        type            cyclic;
-    }
-    baffleCyclic_half1
-    {
-        type            cyclic;
     }
 }
 

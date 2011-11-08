@@ -24,18 +24,6 @@ dictionaryReplacement
             {
                 type        zeroGradient;
             }
-            baffleWall
-            {
-                type        zeroGradient;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
-            }
         }
     }
 
@@ -47,27 +35,6 @@ dictionaryReplacement
             {
                 type            fixedValue;
                 value           uniform (0 0 0);
-            }
-            baffleWall
-            {
-                type                activePressureForceBaffleVelocity;
-                cyclicPatch         baffleCyclic_half0;
-                orientation         1;
-                openingTime         0.01;
-                maxOpenFractionDelta 0.1;
-                openFraction        0;
-                p                   p;
-                minThresholdValue   8000;
-                forceBased          0;
-                value               uniform ( 0 0 0 );
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
             }
         }
     }
@@ -81,19 +48,6 @@ dictionaryReplacement
                 type            compressible::epsilonWallFunction;
                 value           uniform 0.1;
             }
-            baffleWall
-            {
-                type            compressible::epsilonWallFunction;
-                value           uniform 1e-5;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
-            }
         }
     }
 
@@ -105,20 +59,6 @@ dictionaryReplacement
             {
                 type        compressible::kqRWallFunction;
                 value       uniform 1.5;
-         }
-            baffleWall
-            {
-                type        compressible::kqRWallFunction;
-                value       uniform 1.5;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
-            }
         }
     }
 
@@ -129,18 +69,6 @@ dictionaryReplacement
             blockedFaces
             {
                 type        zeroGradient;
-            }
-            baffleWall
-            {
-                type        zeroGradient;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
             }
         }
     }
@@ -154,19 +82,6 @@ dictionaryReplacement
                 type        zeroGradient;
                 value       uniform 1;
             }
-             baffleWall
-            {
-                type        zeroGradient;
-                value       uniform 1;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
-            }
         }
     }
 
@@ -178,19 +93,6 @@ dictionaryReplacement
             {
                 type        zeroGradient;
                 value       uniform 300;
-            }
-            baffleWall
-            {
-                type        zeroGradient;
-                value       uniform 300;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
             }
         }
     }
@@ -204,19 +106,6 @@ dictionaryReplacement
                 type        zeroGradient;
                 value       uniform 300;
             }
-            baffleWall
-            {
-                type        zeroGradient;
-                value       uniform 300;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
-            }
         }
     }
 
@@ -229,19 +118,6 @@ dictionaryReplacement
                 type        zeroGradient;
                 value       uniform 1;
             }
-            baffleWall
-            {
-                type        zeroGradient;
-                value       uniform 1;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
-            }
         }
     }
 
@@ -252,19 +128,6 @@ dictionaryReplacement
             blockedFaces
             {
                 type        zeroGradient;
-            }
-            baffleWall
-            {
-                type        zeroGradient;
-                value       uniform 0.06024096;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
             }
         }
     }
@@ -278,19 +141,6 @@ dictionaryReplacement
                 type        zeroGradient;
                 value       uniform 0.0;
             }
-            baffleWall
-            {
-                type        zeroGradient;
-                value       uniform 0.0;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
-            }
         }
     }
     B
@@ -301,19 +151,6 @@ dictionaryReplacement
             {
                 type        zeroGradient;
                 value       uniform (0 0 0 0 0 0);
-            }
-            baffleWall
-            {
-                type        zeroGradient;
-                value       uniform (0 0 0 0 0 0);
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
             }
         }
     }
@@ -326,19 +163,6 @@ dictionaryReplacement
                 type        zeroGradient;
                 value       uniform 0;
             }
-            baffleWall
-            {
-                type        zeroGradient;
-                value       uniform 0;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
-            }
         }
     }
     CR
@@ -349,19 +173,6 @@ dictionaryReplacement
             {
                 type        zeroGradient;
                 value       uniform (0 0 0 0 0 0);
-            }
-            baffleWall
-            {
-                type        zeroGradient;
-                value       uniform (0 0 0 0 0 0);
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
             }
         }
     }
@@ -374,19 +185,6 @@ dictionaryReplacement
                 type        zeroGradient;
                 value       uniform (0 0 0 0 0 0);
             }
-            baffleWall
-            {
-                type        zeroGradient;
-                value       uniform (0 0 0 0 0 0);
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
-            }
         }
     }
     Nv
@@ -397,19 +195,6 @@ dictionaryReplacement
             {
                 type        zeroGradient;
                 value       uniform 0;
-            }
-            baffleWall
-            {
-                type        zeroGradient;
-                value       uniform 0;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
             }
         }
     }
@@ -422,19 +207,6 @@ dictionaryReplacement
                 type        zeroGradient;
                 value       uniform (0 0 0 0 0 0);
             }
-            baffleWall
-            {
-                type        zeroGradient;
-                value       uniform (0 0 0 0 0 0);
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
-            }
         }
     }
     Lobs
@@ -445,19 +217,6 @@ dictionaryReplacement
             {
                 type        zeroGradient;
                 value       uniform 0;
-            }
-            baffleWall
-            {
-                type        zeroGradient;
-                value       uniform 0;
-            }
-            baffleCyclic_half0
-            {
-                type        cyclic;
-            }
-            baffleCyclic_half1
-            {
-                type        cyclic;
             }
         }
     }

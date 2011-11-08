@@ -32,32 +32,6 @@ License
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 template<class CloudType>
-void Foam::FacePostProcessing<CloudType>::applyToFace
-(
-    const label faceIn,
-    label& zoneI,
-    label& faceI
-) const
-{
-    const faceZoneMesh& fzm = this->owner().mesh().faceZones();
-
-    forAll(faceZoneIDs_, i)
-    {
-        const faceZone& fz = fzm[faceZoneIDs_[i]];
-        forAll(fz, j)
-        {
-            if (fz[j] == faceIn)
-            {
-                zoneI = i;
-                faceI = j;
-                return;
-            }
-        }
-    }
-}
-
-
-template<class CloudType>
 void Foam::FacePostProcessing<CloudType>::makeLogFile
 (
     const word& zoneName,
@@ -326,15 +300,14 @@ Foam::FacePostProcessing<CloudType>::FacePostProcessing
             forAll(fz, j)
             {
                 label faceI = fz[j];
-                label bFaceI = faceI - owner.mesh().nInternalFaces();
-                label patchI = pbm.patchID()[bFaceI];
-
-                if (patchI == -1)
+                if (faceI < owner.mesh().nInternalFaces())
                 {
                     totArea += magSf[fz[j]];
                 }
                 else
                 {
+                    label bFaceI = faceI - owner.mesh().nInternalFaces();
+                    label patchI = pbm.patchID()[bFaceI];
                     const polyPatch& pp = pbm[patchI];
 
                     if
@@ -402,13 +375,26 @@ void Foam::FacePostProcessing<CloudType>::postFace
      || this->owner().solution().transient()
     )
     {
-        label zoneId = -1;
-        label faceId = -1;
-        applyToFace(faceI, zoneId, faceId);
+        const faceZoneMesh& fzm = this->owner().mesh().faceZones();
 
-        if ((zoneId != -1) && (faceId != -1))
+        forAll(faceZoneIDs_, i)
         {
-            mass_[zoneId][faceId] += p.mass()*p.nParticle();
+            const faceZone& fz = fzm[faceZoneIDs_[i]];
+
+            label faceId = -1;
+            forAll(fz, j)
+            {
+                if (fz[j] == faceI)
+                {
+                    faceId = j;
+                    break;
+                }
+            }
+
+            if (faceId != -1)
+            {
+                mass_[i][faceId] += p.mass()*p.nParticle();
+            }
         }
     }
 }

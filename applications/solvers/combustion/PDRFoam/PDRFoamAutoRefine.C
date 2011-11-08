@@ -119,7 +119,6 @@ int main(int argc, char *argv[])
             // Make the fluxes absolute
             fvc::makeAbsolute(phi, rho, U);
 
-            // Test : disable refinement for some cells
             PackedBoolList& protectedCell =
                 refCast<dynamicRefineFvMesh>(mesh).protectedCell();
 
@@ -142,7 +141,6 @@ int main(int argc, char *argv[])
 
             // Do any mesh changes
             bool meshChanged = mesh.update();
-
 
             if (meshChanged)
             {
