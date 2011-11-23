@@ -1818,9 +1818,6 @@ Foam::autoPtr<Foam::mapDistributePolyMesh> Foam::fvMeshDistribute::distribute
     // What to send to neighbouring domains
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    bool oldParRun = UPstream::parRun();
-    UPstream::parRun() = false;
-
     forAll(nSendCells[Pstream::myProcNo()], recvProc)
     {
         if
@@ -1969,9 +1966,6 @@ Foam::autoPtr<Foam::mapDistributePolyMesh> Foam::fvMeshDistribute::distribute
     }
 
 
-    UPstream::parRun() = oldParRun;
-
-
     // Start sending&receiving from buffers
     pBufs.finishedSends();
 
@@ -2069,9 +2063,6 @@ Foam::autoPtr<Foam::mapDistributePolyMesh> Foam::fvMeshDistribute::distribute
 
     // Receive and add what was sent
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-    oldParRun = UPstream::parRun();
-    UPstream::parRun() = false;
 
     forAll(nSendCells, sendProc)
     {
@@ -2380,7 +2371,6 @@ Foam::autoPtr<Foam::mapDistributePolyMesh> Foam::fvMeshDistribute::distribute
         }
     }
 
-    UPstream::parRun() = oldParRun;
 
     // Print a bit.
     if (debug)
