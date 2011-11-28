@@ -36,7 +36,7 @@
 
     fvc::makeAbsolute(phi, U);
 
-    while (pimple.correctNonOrthogonal())
+    for (int nonOrth=0; nonOrth<=pimple.nNonOrthCorr(); nonOrth++)
     {
         fvScalarMatrix pcorrEqn
         (
@@ -46,7 +46,7 @@
         pcorrEqn.setReference(pRefCell, pRefValue);
         pcorrEqn.solve();
 
-        if (pimple.finalNonOrthogonalIter())
+        if (nonOrth == pimple.nNonOrthCorr())
         {
             phi -= pcorrEqn.flux();
             phiAbs = phi;
