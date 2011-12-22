@@ -789,6 +789,14 @@ int main(int argc, char *argv[])
 
 
         // Point fields
+        if
+        (
+            pointScalarFields.size()
+         || pointVectorFields.size()
+         || pointSphericalTensorFields.size()
+         || pointSymmTensorFields.size()
+         || pointTensorFields.size()
+        )
         {
             labelIOList pointProcAddressing
             (
