@@ -172,7 +172,9 @@ void Foam::directMappedPatchBase::findSamples
                     << sampleModeNames_[mode_] << " mode." << exit(FatalError);
             }
 
-            // Octree based search engine
+            // Octree based search engine. Uses min tetDecomp so force
+            // calculation
+            (void)mesh.tetBasePtIs();
             meshSearch meshSearchEngine(mesh, false);
 
             forAll(samples, sampleI)
